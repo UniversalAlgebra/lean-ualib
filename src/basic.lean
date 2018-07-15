@@ -29,10 +29,12 @@ namespace examples
   ( add_assoc : ∀ a b c : α, a + b + c = a + (b + c) )
 
   class monoid (α : Type u) extends semigroup α, has_one α := 
-  ( one_mul : ∀ a : α, 1 * a = a ∧ a * 1 = a ) 
+  ( one_mul : ∀ a : α, 1 * a = a )
+  ( mul_one : ∀ a : α, a * 1 = a ) 
 
   class comm_monoid (α : Type u) extends comm_semigroup α, has_zero α := 
-  ( zero_add : ∀ a : α, 0 + a = a ∧ a + 0 = a ) 
+  ( zero_add : ∀ a : α, 0 + a = a )
+  ( add_zero : ∀ a : α, a + 0 = a ) 
 
   class group (α : Type u) extends monoid α, has_inv α 
 
@@ -40,11 +42,13 @@ namespace examples
 
   -- Use monoid here because we assume rings have a multiplicative identity
   class ring (α : Type u) extends comm_group α, monoid α := 
-  ( distr_add_mul : ∀  a b c : α, a * (b + c) = a * b + a * c )
+  ( distr_add_mul_left : ∀  a b c : α, a * (b + c) = a * b + a * c )
+  ( distr_add_mul_right : ∀  a b c : α, (b + c) * a = b * a + c * a )
 
   -- Use semigroup here to model rings without a multiplicative identity; i.e. "rngs"
   class rng (α : Type u) extends comm_group α, semigroup α :=
-  ( distr_add_mul : ∀  a b c : α, a * (b + c) = a * b + a * c )
+  ( distr_add_mul_left : ∀  a b c : α, a * (b + c) = a * b + a * c )
+  ( distr_add_mul_right : ∀  a b c : α, (b + c) * a = b * a + c * a )
 
   -- model meet or join with plus
   class semilattice (α : Type u) extends comm_semigroup α :=
@@ -54,9 +58,11 @@ namespace examples
   -- we model ∨ (or "join" or "sup") as + of semilattice; 
   -- we model ∧ (or "meet" or "inf") as a * of a semigroup and make it commutative.
   class lattice (α : Type u) extends semilattice α, semigroup α :=  
-  ( mult_idempotent : ∀ x : α,  x * x = x )  -- mult is meet
-  ( add_absorb : ∀ x y : α, x * (x + y) = x  ∧ (x + y) * x = x )  
-  ( mult_absorb : ∀ x y : α, x + (x * y) = x ∧ (x * y) + x = x )  
+  ( mult_idempotent : ∀ x : α,  x * x = x )
+  ( add_absorb_left : ∀ x y : α, x * (x + y) = x )  
+  ( add_absorb_right : ∀ x y : α, (x + y) * x = x )  
+  ( mult_absorb_left : ∀ x y : α, x + (x * y) = x )  
+  ( mult_absorb_right : ∀ x y : α, (x * y) + x = x )  
 
  
 end examples
