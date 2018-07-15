@@ -46,6 +46,18 @@ namespace examples
   class rng (α : Type u) extends comm_group α, semigroup α :=
   ( distr_add_mul : ∀  a b c : α, a * (b + c) = a * b + a * c )
 
+  -- model meet or join with plus
+  class semilattice (α : Type u) extends comm_semigroup α :=
+  ( add_idempotent : ∀ x :α,  x + x = x )
+
+  -- __Lattice__
+  -- we model ∨ (or "join" or "sup") as + of semilattice; 
+  -- we model ∧ (or "meet" or "inf") as a * of a semigroup and make it commutative.
+  class lattice (α : Type u) extends semilattice α, semigroup α :=  
+  ( mult_idempotent : ∀ x : α,  x * x = x )  -- mult is meet
+  ( add_absorb : ∀ x y : α, x * (x + y) = x  ∧ (x + y) * x = x )  
+  ( mult_absorb : ∀ x y : α, x + (x * y) = x ∧ (x * y) + x = x )  
+
  
 end examples
 
