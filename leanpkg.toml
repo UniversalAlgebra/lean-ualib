@@ -1,7 +1,8 @@
 [package]
 name = "lean-ualib"
 version = "0.1"
-lean_version = "nightly-2018-06-21"
+lean_version = "3.4.1"
 path = "src"
 
 [dependencies]
+mathlib = {git = "https://github.com/leanprover/mathlib", rev = "905345a2ceaa5d0c7bc2f6310026961416b2cae4"}

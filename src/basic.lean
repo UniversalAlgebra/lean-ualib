@@ -1,77 +1,55 @@
-/-
-Copyright (c) 2018 William DeMeo and Siva Somayyajula. All rights reserved. 
-Released under Apache 2.0 license as described in the file LICENSE.txt.
+import init.function
 
-Package: lean-ualib 
-File: basic.lean 
-Description: Universal Algebra Foundations
-Author: William DeMeo <williamdemeo@gmail.com>
-Date: 2018.07.14
--/
+import data.seq
+import data.function
 
--- we start with some examples of classical algebraic structures
-namespace examples
-  universes u
-  variables {α : Type u}
+open seq (map) (all)
+open function (op) (restrict)
 
-  class magma (α : Type u) extends has_mul α
-  -- avoid the name groupoid here because that means something 
-  -- different in category theory; we could have called these "binars"
+open psigma (fst) (snd)
 
-  -- by convention, we use an additive model if the operation is commutative
-  class commutative_magma (α : Type u) extends has_add α :=
-  (add_comm : ∀ a b : α, a + b = b + a)
+-- Definition/s 1.1
 
-  class semigroup (α : Type u) extends magma α :=
-  (mul_assoc : ∀ a b c : α, a * b * c = a * (b * c))
+def signature :=
+psigma (λ F, F → ℕ)
 
-  class commutative_semigroup (α : Type u) extends commutative_magma α := 
-  (add_assoc : ∀ a b c : α, a + b + c = a + (b + c))
+instance sig_funsym : has_coe_to_sort signature :=
+⟨_, fst⟩
 
-  class monoid (α : Type u) extends semigroup α, has_one α := 
-  (one_mul : ∀ a : α, 1 * a = a) (mul_one : ∀ a : α, a * 1 = a) 
+instance sig_arity : has_coe_to_fun signature :=
+⟨_, snd⟩
 
-  class commutative_monoid (α : Type u) extends commutative_semigroup α, has_zero α := 
-  (zero_add : ∀ a : α, 0 + a = a) (add_zero : ∀ a : α, a + 0 = a) 
+section
+parameter (S : signature)
 
-  class group (α : Type u) extends monoid α, has_inv α 
+def algebra_on (α) :=
+Π f, op α (S f)
 
-  class commutative_group (α : Type u) extends commutative_monoid α, has_inv α 
+def algebra :=
+psigma algebra_on
 
-  -- Use monoid here because we assume rings have a multiplicative identity
-  class ring (α : Type u) extends commutative_group α, monoid α := 
-  (distr_add_mul_left : ∀  a b c : α, a * (b + c) = a * b + a * c)
-  (distr_add_mul_right : ∀  a b c : α, (b + c) * a = b * a + c * a)
+instance alg_univ : has_coe_to_sort algebra :=
+⟨_, fst⟩
 
-  -- Use semigroup here to model rings without a multiplicative identity; i.e. "rngs"
-  class rng (α : Type u) extends commutative_group α, semigroup α :=
-  (distr_add_mul_left : ∀  a b c : α, a * (b + c) = a * b + a * c)
-  (distr_add_mul_right : ∀  a b c : α, (b + c) * a = b * a + c * a)
+instance alg_interp : has_coe_to_fun algebra :=
+⟨_, snd⟩
 
-  -- model meet or join with plus
-  class semilattice (α : Type u) extends commutative_semigroup α :=
-  (add_idempotent : ∀ x :α,  x + x = x)
+end
 
-  -- we model ∨ (or "join" or "sup") as + of semilattice; 
-  -- we model ∧ (or "meet" or "inf") as a * of a semigroup and make it commutative.
-  class lattice (α : Type u) extends semilattice α, semigroup α :=  
-  (mul_idempotent : ∀ x : α,  x * x = x)
-  (add_absorb_left: ∀ x y: α, x * (x + y) = x) (add_absorb_right: ∀ x y: α, (x + y) * x = x)  
-  (mul_absorb_left: ∀ x y: α, x + (x * y) = x) (mul_absorb_right: ∀ x y: α, (x * y) + x = x)  
+section
+parameter {S : signature}
 
-  class bounded_lattice (a : Type u) extends lattice α, has_one α, has_zero α :=
-  (one_mul : ∀ x : α, one * x = x)  (mul_one : ∀ x : α, x * one = x)
-  (add_one : ∀ x : α, one + x = one)  (one_add : ∀ x : α, x + one = one)
-  (zero_mul : ∀ x : α, zero * x = zero) (mul_zero : ∀ x : α, x * zero = zero)
-  (zero_add : ∀ x : α, zero + x = x) (add_zero : ∀ x : α, x + zero = x)
+-- Definition/s 1.2
 
-  class distributative_lattice (α : Type u) extends lattice α :=  
-  (add_dis : ∀ x y z : α,  x + (y * z) = (x + y) * (x + z))
-  (dis_add : ∀ x y z : α,  (y * z) + x = (y + x) * (z + x))
-  (mul_dis : ∀ x y z : α,  x * (y + z) = (x * y) + (x * z))
-  (dis_mul : ∀ x y z : α,  (y + z) * x = (y * x) + (z * x))
+def is_subalgebra {α} (A : algebra_on S α) {β : set α} (B : algebra_on S β) :=
+∀ f b, ↑(B f b) = restrict (A f) β b
 
+def homomorphic {A B : algebra S} (h : A → B) :=
+∀ f a, h (A f a) = B f (map h a)
 
-end examples
+-- Definition 1.8
 
+def is_subuniverse {α} (β : set α) (A : algebra_on S α) :=
+∀ f b, restrict (A f) β b ∈ β
 
+end
