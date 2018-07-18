@@ -13,4 +13,7 @@ seq α n → α
 def restrict {α β n} (f : seq α n → β) (γ : set α) (x : seq γ n) : β :=
 f (map coe x)
 
+inductive range_seq {α} {β : Type*} (f : α → β) {n} : set (seq β n)
+| intro (a) : range_seq (map f a)
+
 end function
