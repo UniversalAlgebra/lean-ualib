@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2018 William DeMeo and Siva Somayyajula. All rights reserved. 
-Released under Apache 2.0 license as described in the file LICENSE.txt.
-
-Package: lean-ualib 
-File: basic.lean 
-Description: Universal Algebra Foundations
-Author: William DeMeo <williamdemeo@gmail.com>
-Date: 2018.07.14
--/
-
 -- we start with some examples of classical algebraic structures
 namespace examples
   universes u
