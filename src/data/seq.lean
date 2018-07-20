@@ -12,4 +12,11 @@ def map {α β} (f : α → β) {n} (a : seq α n) : seq β n :=
 def all {α n} (a : seq α n) (P : α → Prop) :=
 ∀ i, P (a i)
 
+def tail {α n} (a : seq α (n + 1)) : seq α n :=
+λ i, a (fin.succ i)
+
+def reduce {α β} (f : β → α → β) (b : β) : Π {n}, seq α n → β
+| 0 _       := b
+| (n + 1) a := f (reduce (tail a)) (a 0)
+
 end seq
