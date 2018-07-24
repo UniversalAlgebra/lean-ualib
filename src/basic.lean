@@ -1,20 +1,14 @@
-import init.function
-
-import data.seq
-import data.function
-
-open seq (map) (all)
-open function (op) (restrict)
+import data.set2
 
 structure signature :=
-mk :: (F : Sort*) (ρ : F → ℕ)
+mk :: (F : Sort*) (ρ : F → Sort*)
 
 section
 parameter (S : signature)
 
 -- Defines the interpretation of an algebra on the carrier α
 def algebra_on (α) :=
-Π (f : S.F), op α (S.ρ f)
+Π f, (S.ρ f → α) → α
 
 -- An algebra pairs a carrier with an interpretation
 def algebra :=
@@ -32,9 +26,9 @@ section
 parameter {S : signature}
 
 def is_subalgebra {α} (A : algebra_on S α) {β : set α} (B : algebra_on S β) :=
-∀ f b, ↑(B f b) = restrict (A f) β b
+∀ f b, ↑(B f b) = A f ↑b
 
 def homomorphic {A B : algebra S} (h : A → B) :=
-∀ f a, h (A f a) = B f (map h a)
+∀ f a, h (A f a) = B f (h ∘ a)
 
 end

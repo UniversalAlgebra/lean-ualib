@@ -1,17 +1,13 @@
 import basic
-import data.function
-import data.seq
 import data.set2
 
-open function (restrict)
-open seq (all)
-open set (iUnion)
+open set (iUnion) (image_in)
 
 section
 parameters {α : Type*} {S : signature} (A : algebra_on S α)
 
 def Sub : set (set α) :=
-λ β, ∀ f a, all a (∈ β) → A f a ∈ β
+λ β, ∀ f a, image_in a β → A f a ∈ β
 
 def Sg (X : set α) : set α :=
 ⋂₀ {U ∈ Sub | X ⊆ U}
@@ -20,7 +16,7 @@ parameter (X : set α)
 
 def X' : ℕ → set α
 | 0 := X
-| (n + 1) := X' n ∪ {y | ∀ f a, all a (∈ X' n) ∧ y = A f a}
+| (n + 1) := X' n ∪ {y | ∀ f a, image_in a (X' n) ∧ y = A f a}
 
 def Y := ⋃ᵢ X'
 
