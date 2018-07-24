@@ -1,13 +1,13 @@
 import data.set2
 
 structure signature :=
-mk :: (F : Sort*) (ρ : F → Sort*)
+mk :: (F : Type*) (ρ : F → Type*)
 
 section
 parameter (S : signature)
 
 -- Defines the interpretation of an algebra on the carrier α
-def algebra_on (α) :=
+def algebra_on (α : Type*) :=
 Π f, (S.ρ f → α) → α
 
 -- An algebra pairs a carrier with an interpretation
