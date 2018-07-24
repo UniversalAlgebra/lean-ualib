@@ -31,4 +31,4 @@ If you have a comment, question, suggestion, or problem related to this reposito
 
 ## License
 
-This repository and its contents are released under and covered by the [Apache License, v 2.0](https://raw.githubusercontent.com/UniversalAlgebra/lean-ualib/master/LICENSE). Please read the [LICENSE file]((https://raw.githubusercontent.com/UniversalAlgebra/lean-ualib/master/LICENSE).
+This repository and its contents are released under and covered by the [Apache License, v 2.0](https://raw.githubusercontent.com/UniversalAlgebra/lean-ualib/master/LICENSE). Please read the [LICENSE file](https://raw.githubusercontent.com/UniversalAlgebra/lean-ualib/master/LICENSE).
