@@ -1,57 +1,60 @@
 import basic
 
-import data.seq
-import order.bounded_lattice
+section
+parameters (S : signature) (X : Type*)
 
-open seq (map) (reduce) (all)
-open lattice
+inductive term
+| var     : X → term
+| app (f) : (S.ρ f → term) → term
 
+def free : algebra S :=
+⟨term, term.app⟩
+
+end
 
 section
-
-
-inductive term  {S : signature} (X : Type) : Type
-| var : X → term
-| app : ∀ (f : S.F), (S.ρ f → term) → term
+parameters {S : signature} (A : algebra S) (X : Type*)
 
 open term
 
+def free_ := free S X
+def var_  := @var S X
 
-def free {S : signature} (X : Type) : algebra S :=
-⟨@term S X, @term.app S X⟩
+-- Free algebra is really free: existence & uniqueness of homomorphism
 
-#print free
+section
+parameter (h : X → A)
 
-variable (S : signature) --(X : Type 0)
-variables (A : algebra S) (Y: Type) (g : Y → A.1)
-
--- Free algebra is really free: existence & uniqueness
-def imap : (@free S Y) → A.1
-| (term.var x) := g x
-| (term.app f a) := (A f) (imap ∘ a)
---(λ (i : S.ρ f), imap (a i))
+def imap : free_ → A
+| (var .(S) x) := h x
+-- WARNING: need to fully expand composition so Lean doesn't throw a tantrum
+| (app f a)    := A f (λ x, imap $ a x)
 
 lemma imap_is_hom : homomorphic imap :=
-λ f a, by rw [show @free S Y f a = app f a, from rfl,
-              show imap (app f a) = A f (imap ∘ a), from rfl]
-
-lemma hom_unique : ∀ {α β : free → A},
-  homomorphic α → homomorphic β → α ∘ var = β ∘ var → α = β :=
-λ _ _ hα hβ h, funext $ λ t, begin
-  induction t with _ _ _ ih,
-  { apply congr_fun h },
-  { erw [hα, hβ, function.comp, funext ih] }
-end
+λ f a, show imap (app f a) = A f (imap ∘ a), from rfl
 
 end
 
+lemma hom_unique : ∀ {α β : free_ → A},
+  homomorphic α → homomorphic β → α ∘ var_ = β ∘ var_ → α = β :=
+begin
+  assume (α β : free_ → A)
+         (hα : homomorphic α)
+         (hβ : homomorphic β)
+         (h : α ∘ var_ = β ∘ var_),
+  
+  funext t, show α t = β t,
+  
+  induction t with t f a ih,
 
+  show α (var_ t) = β (var_ t),
+  { apply congr_fun h t },
 
+  show α (app f a) = β (app f a),
+  { have ih' : α ∘ a = β ∘ a, from funext ih,
+    calc α (app f a) = A f (α ∘ a) : hα f a
+                 ... = A f (β ∘ a) : congr_arg (A f) ih'
+                 ... = β (app f a) : (hβ f a).symm }
+end
 
-
-
-
-
-
-
-
+end
