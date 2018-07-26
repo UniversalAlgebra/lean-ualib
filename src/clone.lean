@@ -24,8 +24,8 @@ begin
 end
 
 theorem clo_is_clone : is_clone clo :=
-{ proj := clo.proj,
-  comp := begin
+{ proj_closed := clo.proj,
+  comp_closed := begin
     intros _ _ fc gc,
     induction fc with _ f _ _ _ ih,
     { apply gc },
