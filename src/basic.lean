@@ -1,4 +1,9 @@
-import data.set2
+import data.set
+
+def op (β α) := (β → α) → α
+
+def π {β α} (i) : op β α :=
+λ x, x i
 
 structure signature :=
 mk :: (F : Type*) (ρ : F → Type*)
@@ -8,7 +13,7 @@ parameter (S : signature)
 
 -- Defines the interpretation of an algebra on the carrier α
 def algebra_on (α : Type*) :=
-Π f, (S.ρ f → α) → α
+Π f, op (S.ρ f) α
 
 -- An algebra pairs a carrier with an interpretation
 def algebra :=
