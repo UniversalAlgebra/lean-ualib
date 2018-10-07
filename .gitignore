@@ -1,4 +1,14 @@
 *.olean
 /_target
 /leanpkg.path
-*.aux, *.bbl, *.blg, *.fdb_latexmk, *.fls, *.log, *.out, *.synctex.gz, *.thm, *.upa
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.thm
+*.upa
+src/birkhoff.lean

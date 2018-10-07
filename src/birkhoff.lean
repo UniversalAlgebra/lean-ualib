@@ -37,44 +37,62 @@ section
   -- each op symbol f : F, of arity `α = S.ρ f`, a function of type (α → υ) → υ.
   
   def homomorphic {S : signature} {A : algebra_on υ S} {B : algebra_on τ S} 
-  (h : υ → τ) : Prop := ∀ (f : S.F) (a : (S.ρ f) → υ), h (A f a) = (B f) (h ∘ a)
+  (h : υ → τ) : Prop := 
+  ∀ (f : S.F) (tuple : (S.ρ f) → υ), h (A f tuple) = (B f) (h ∘ tuple)
 
   def is_subuniverse {S : signature} (A : algebra_on υ S) : (υ → Prop) → Prop :=
-  λ B, ∀ f (a : S.ρ f → υ), (∀ x, B (a x)) → B (A f a)
+  λ B, ∀ f, ∀ (tuple : S.ρ f → υ), (∀ x, B (tuple x)) → B (A f tuple)
   -- Note: B z is true iff z ∈ B, so the line B (a x) → B (A f a) 
   -- means: (a x) ∈ B  → (A f a) ∈ B.
 
--- Elementary Facts ------------------------------------------
+  -- Elementary Facts ------------------------------------------
 
-/- Lemma (cf. Ex. 1.16.6 of MR2839398)
-   Let $f$ and $g$ be homomorphisms from $\alg{A}$ to $\alg{B}$.
-   Let $E(f,g) = \{ a \in A : f(a) = g(a) \}$ (the \defin{equalizer} of $f$ and $g$). 
-   1. $E(f,g)$ is a subuniverse of $\alg{A}$.
-   2. If $X \subseteq A$ and $X$ generates $\alg{A}$ and $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
-   3. If $\alg{A}, \alg{B}$ are finite and $X$ generates $\alg{A}$, then $|\!\Hom{\alg{A},\alg{B}}| \leq |B|^{|X|}$.
--/
--- import basic
--- import data.set
+  /- Lemma (cf. Ex. 1.16.6 of MR2839398)
+     Let $f$ and $g$ be homomorphisms from $\alg{A}$ to $\alg{B}$.
+     Let $E(f,g) = \{ a \in A : f(a) = g(a) \}$ (the \defin{equalizer} of $f$ and $g$). 
+     1. $E(f,g)$ is a subuniverse of $\alg{A}$.
+     2. If $X \subseteq A$ and $X$ generates $\alg{A}$ and $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
+     3. If $\alg{A}, \alg{B}$ are finite and $X$ generates $\alg{A}$, then $|\!\Hom{\alg{A},\alg{B}}| \leq |B|^{|X|}$.
+  -/
 
-parameters {S : signature} {p : υ → Prop} {q : τ → Prop} 
+  parameter {S : signature} 
+  parameters {A : algebra_on υ S} {B : algebra_on τ S}
+  
+  -- equalizer for generic functions
+  def equalizer (h : υ → τ) (g : υ → τ) : υ → Prop := λ (x : υ), h x = g x 
 
-def equalizer {A : algebra_on υ S} {B : algebra_on τ S}
- (h : υ → τ)  (hh : @homomorphic S A B h) (g : υ → τ) (hg : @homomorphic S A B g) : υ → Prop := 
- λ (a : υ), h a = g a 
+  -- equalizer for homomorphisms
+  def equalizer_of_homs (h : υ → τ) (g : υ → τ) 
+  (hh : @homomorphic S A B h) (hg : @homomorphic S A B g) : υ → Prop := 
+  λ (ai : υ), h ai = g ai 
 
- lemma equalizer_is_subuniverse {A : algebra_on υ S} {B : algebra_on τ S}
- (h : υ → τ) (hh : @homomorphic S A B h) (g : υ → τ) (hg : homomorphic g) : 
- is_subuniverse A (equalizer h hh g hg) := 
-   assume (f : S.F) (a : S.ρ f → υ)  (h₁ : ∀ x, h (a x) = g (a x)), -- (h₁ : ∀ x, (@equalizer A B h hh g hg) (a x)), 
-   show (equalizer h hh g hg) (A f a), from 
-   calc 
-       h (A f a) = (B f) (h ∘ a) : hh f a
-             ... = B f (g ∘ a) : h₁  
-             ... = 
-   end
-end
+  -- 1. The equalizer $E(f,g)$ is a subuniverse of $\alg{A}$.
+  lemma equalizer_is_subuniverse
+  (h : υ → τ) (g : υ → τ) (hh : @homomorphic S A B h)  (hg : @homomorphic S A B g) : 
+  is_subuniverse A (equalizer h g) := 
+    assume (f : S.F) (tuple : S.ρ f → υ),
+    assume (h₁ : ∀ i, (equalizer h g) (tuple i)),
+    have h₂ : h ∘ tuple = g ∘ tuple, from funext h₁, 
+      calc h (A f tuple) = (B f) (h ∘ tuple): hh f tuple
+                     ... = (B f) (g ∘ tuple): congr_arg (B f) h₂ 
+                     ... = g (A f tuple) : by rw (hg f tuple)
 
-/- \begin{proof}
+  #check @equalizer_is_subuniverse
+
+  lemma equalizer_of_homs_is_subuniverse (h : υ → τ) (g : υ → τ) 
+  (hh : @homomorphic S A B h) (hg : @homomorphic S A B g) : 
+  is_subuniverse A (equalizer_of_homs h g hh hg) := 
+    assume (f : S.F) (tuple : S.ρ f → υ),
+    assume (h₁ : ∀ i, (equalizer_of_homs h g hh hg) (tuple i)),
+    have h ∘ tuple = g ∘ tuple, from funext h₁, 
+    calc h (A f tuple) = (B f) (h ∘ tuple): hh f tuple
+                   ... = (B f) (g ∘ tuple): congr_arg (B f) this 
+                   ... = g (A f tuple) : by rw (hg f tuple)
+
+  #check @equalizer_of_homs_is_subuniverse
+
+/- Here's a "paper-and-pencil" proof of equalizer_is_subuniverse:
+
   Let $\rho$ be the similarity type of $\alg{A}$ and $\alg{B}$, and 
   $f$ a (say, $n$-ary) operation symbol in $\rho$. Then, 
   for every tuple $(a_1, \dots, a_n) \in E(h,g)^n$,
@@ -88,8 +106,29 @@ end
   subuniverse of $\alg{A}$.
 -/
 
-/- def is_generating {α} (X : set α) (A : algebra_on S α)  := (X ⊆ A) ∧ (A ⊆ Sg X) := sorry
 
+def Sub : (υ→ Prop) → Prop :=
+λ B, ∀ f (a : S.ρ f → υ), (∀ x, B (a x)) → B (A f a)
+
+def Sg (X : υ → Prop) : υ → Prop :=
+⋂₀ {U ∈ Sub | X ⊆ U}
+
+parameter (X : set α)
+
+-- One way to make this SEGFAULT lol
+inductive Y : set α
+| var (x : α) : x ∈ X → Y x
+| app (f : S.F) (a : S.ρ f → α) : (∀ i, Y (a i)) → Y (A f a)
+
+theorem sg_inductive : Sg X = Y :=
+have h : Y ∈ Sub, from sorry,
+have l : Sg X ⊆ Y, from sorry,
+have r : Y ⊆ Sg X, from sorry,
+subset.antisymm l r
+
+def is_generating (X : υ → Prop) := ∀ u : υ, (A a) → (Sg X) x := sorry
+
+/-
 
 -- If $X \subseteq A$ and $X$ generates $\alg{A}$ and $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
 lemma homs_determined_on_gens {A B : algebra_on S α} (f : A → B) (g : A → B)
@@ -118,3 +157,4 @@ lemma homs_determined_on_gens {A B : algebra_on S α} (f : A → B) (g : A → B
   $|\!\Hom{\alg{A},\alg{B}}| \leq |B|^{|X|}$.
   -/
 
+end
