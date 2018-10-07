@@ -107,29 +107,7 @@ section
 -/
 
 
-def Sub : (υ→ Prop) → Prop :=
-λ B, ∀ f (a : S.ρ f → υ), (∀ x, B (a x)) → B (A f a)
-
-def Sg (X : υ → Prop) : υ → Prop :=
-⋂₀ {U ∈ Sub | X ⊆ U}
-
-parameter (X : set α)
-
--- One way to make this SEGFAULT lol
-inductive Y : set α
-| var (x : α) : x ∈ X → Y x
-| app (f : S.F) (a : S.ρ f → α) : (∀ i, Y (a i)) → Y (A f a)
-
-theorem sg_inductive : Sg X = Y :=
-have h : Y ∈ Sub, from sorry,
-have l : Sg X ⊆ Y, from sorry,
-have r : Y ⊆ Sg X, from sorry,
-subset.antisymm l r
-
-def is_generating (X : υ → Prop) := ∀ u : υ, (A a) → (Sg X) x := sorry
-
 /-
-
 -- If $X \subseteq A$ and $X$ generates $\alg{A}$ and $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
 lemma homs_determined_on_gens {A B : algebra_on S α} (f : A → B) (g : A → B)
 (hf : homomorphic f) (hg : homomorphic g) (X : set α) : (is_generating X A) → (∀ x, f x = g x) → f = g := sorry
