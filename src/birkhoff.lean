@@ -1,4 +1,4 @@
-/-basic.lean -- Basic definitions for lean-ualib
+/-birkhoof.lean -- Birkhoff's HSP Theorem in Lean
 
   Notes:Recall, 
         -`Prop` is syntactic sugar for `Sort 0`, the bottom of the type hierarchy.
