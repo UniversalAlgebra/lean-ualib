@@ -18,29 +18,32 @@ section
   parameter τ : Sort u  -- Another carrier type
 
   -- Operation on the carrier υ (of arity α) 
-  def op {υ : Sort u} (α : Sort a) := (α → υ) → υ 
+  def op (υ : Sort u) (α : Sort a) := (α → υ) → υ  
+
+  -- Restricted Operation on the carrier υ (of arity α) 
+  def op_restricted {υ : Sort u} (r : υ → Prop) (α : Sort a) := (α → (υ → Prop)) → (υ → Prop) 
 
   -- i-th projection
-  def π {υ : Sort u} (α : Sort a) (i) : @op υ α := λ x, x i
+  def π {υ : Sort u} (α : Sort a) (i) : op υ α := λ x, x i
 
   -- Signature
   -- F : a set of operation symbols
   -- ρ : returns the arity of a given operation symbol
   structure signature := 
   mk :: (F : Sort s) (ρ : F → Sort a)
-
+  
   -- The type of interpretations of operation symbols.
   def algebra_on (υ : Sort u) (S : signature) := 
-  Π (f : S.F) , @op υ (S.ρ f)
+  Π (f : S.F) , op υ (S.ρ f)
   -- It's called `algebra_on` since an algebra is fully specified by its
   -- Cayley (operation) tables. An inhabitant of `algebra_on` assigns to 
   -- each op symbol f : F, of arity `α = S.ρ f`, a function of type (α → υ) → υ.
   
-  def homomorphic {S : signature} {A : algebra_on υ S} {B : algebra_on τ S} 
+  def homomorphic {υ : Sort u} {τ : Sort u} {S : signature} (A : algebra_on υ S) (B : algebra_on τ S) 
   (h : υ → τ) : Prop := 
   ∀ (f : S.F) (tuple : (S.ρ f) → υ), h (A f tuple) = (B f) (h ∘ tuple)
 
-  def is_subuniverse {S : signature} (A : algebra_on υ S) : (υ → Prop) → Prop :=
+  def is_subuniverse {υ : Sort u} {S : signature} (A : algebra_on υ S) : (υ → Prop) → Prop :=
   λ B, ∀ f, ∀ (tuple : S.ρ f → υ), (∀ x, B (tuple x)) → B (A f tuple)
   -- Note: B z is true iff z ∈ B, so the line B (a x) → B (A f a) 
   -- means: (a x) ∈ B  → (A f a) ∈ B.
@@ -63,12 +66,12 @@ section
 
   -- equalizer for homomorphisms
   def equalizer_of_homs (h : υ → τ) (g : υ → τ) 
-  (hh : @homomorphic S A B h) (hg : @homomorphic S A B g) : υ → Prop := 
+  (hh : homomorphic A B h) (hg : homomorphic A B g) : υ → Prop := 
   λ (ai : υ), h ai = g ai 
 
   -- 1. The equalizer $E(f,g)$ is a subuniverse of $\alg{A}$.
   lemma equalizer_is_subuniverse
-  (h : υ → τ) (g : υ → τ) (hh : @homomorphic S A B h)  (hg : @homomorphic S A B g) : 
+  (h : υ → τ) (g : υ → τ) (hh : homomorphic A B h)  (hg : homomorphic A B g) : 
   is_subuniverse A (equalizer h g) := 
     assume (f : S.F) (tuple : S.ρ f → υ),
     assume (h₁ : ∀ i, (equalizer h g) (tuple i)),
@@ -77,10 +80,8 @@ section
                      ... = (B f) (g ∘ tuple): congr_arg (B f) h₂ 
                      ... = g (A f tuple) : by rw (hg f tuple)
 
-  #check @equalizer_is_subuniverse
-
   lemma equalizer_of_homs_is_subuniverse (h : υ → τ) (g : υ → τ) 
-  (hh : @homomorphic S A B h) (hg : @homomorphic S A B g) : 
+  (hh : homomorphic A B h) (hg : homomorphic A B g) : 
   is_subuniverse A (equalizer_of_homs h g hh hg) := 
     assume (f : S.F) (tuple : S.ρ f → υ),
     assume (h₁ : ∀ i, (equalizer_of_homs h g hh hg) (tuple i)),
@@ -88,8 +89,6 @@ section
     calc h (A f tuple) = (B f) (h ∘ tuple): hh f tuple
                    ... = (B f) (g ∘ tuple): congr_arg (B f) this 
                    ... = g (A f tuple) : by rw (hg f tuple)
-
-  #check @equalizer_of_homs_is_subuniverse
 
 /- Here's a "paper-and-pencil" proof of equalizer_is_subuniverse:
 
@@ -107,11 +106,15 @@ section
 -/
 
 
-/-
--- If $X \subseteq A$ and $X$ generates $\alg{A}$ and $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
-lemma homs_determined_on_gens {A B : algebra_on S α} (f : A → B) (g : A → B)
-(hf : homomorphic f) (hg : homomorphic g) (X : set α) : (is_generating X A) → (∀ x, f x = g x) → f = g := sorry
- -/
+--     2. If $X \subseteq A$ and $X$ generates $\alg{A}$ and $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
+
+
+def generates (X : υ → Prop) : Prop := ∀ (SX : υ → Prop), --if B contains X and is a subalgebra of A, then B = A
+∀ x, (X x → (SX x)) →  is_subuniverse A SX → is_subuniverse SX (λ z, true)
+
+lemma homs_determined_on_gens (h : υ → τ) (g : υ → τ)
+(hh : @homomorphic S A B h) (hg : @homomorphic S A B g) (X : υ → Prop) : 
+(is_generating X A) → (∀ x, h x = g x) → h = g := sorry
  /- 
   Suppose the subset $X \subseteq A$ generates $\alg{A}$ and suppose
   $\restr{f}{X} = \restr{g}{X}$.
@@ -136,3 +139,4 @@ lemma homs_determined_on_gens {A B : algebra_on S α} (f : A → B) (g : A → B
   -/
 
 end
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
