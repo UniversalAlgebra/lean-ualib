@@ -11,4 +11,4 @@
 *.synctex.gz
 *.thm
 *.upa
-src/birkhoff.lean
+*~
