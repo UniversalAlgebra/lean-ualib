@@ -68,7 +68,7 @@ section
                  ... = g (A f a) : eq.symm (hg f a)
   
 
-  -- 2. If X ⊆ A, if Sg(X) = \mathbf A, and if f x = g x for all x ∈ X, then f = g. 
+  -- 2. If $X ⊆ A$, if $Sg(X) = \mathbf A$, and if $f x = g x$ for all $x ∈ X$, then $f = g$. 
 
 
 
