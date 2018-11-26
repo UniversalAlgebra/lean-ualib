@@ -70,52 +70,38 @@ section
 
   -- 2. If $X ⊆ A$, if $Sg(X) = \mathbf A$, and if $f x = g x$ for all $x ∈ X$, then $f = g$. 
 
+lemma mem_of_eq (s t : set α) : s = t →  ∀ x, x ∈ s → x ∈ t := 
+begin intros h x h', rw ←h, assumption end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/- inductive term
-| var     : X → term
-| app (f) : (S.ρ f → term) → term
-
-def free : algebra S :=
-⟨term, term.app⟩
- -/
--- One way to make this SEGFAULT lol
-/- inductive subuniverse (X : υ) (S: signature) : Type
-| var : subuniverse 
-| app (f : S.F) (a : S.ρ f → υ) : (∀ i, subuniverse (a i)) → Y (A f a)
-
-theorem sg_inductive : Sg X = Y :=
-have h : Y ∈ Sub, from sorry,
-have l : Sg X ⊆ Y, from sorry,
-have r : Y ⊆ Sg X, from sorry,
-subset.antisymm l r
-def is_subuniverse' {υ : Sort u} {S : signature} (A : algebra_on υ S) : (υ → Prop) → Prop :=
-  λ B, ∀ f, ∀ (tuple : S.ρ f → υ), (∀ x, B (tuple x)) → B (A f tuple)
-  
-
-def generates (X : υ → Prop) : Prop := ∀ (SX : υ → Prop), --if B contains X and is a subalgebra of A, then B = A
+/- def generates (X : υ → Prop) : Prop := ∀ (SX : υ → Prop), --if B contains X and is a subalgebra of A, then B = A
 ∀ x, (X x → (SX x)) →  is_subuniverse A SX → is_subuniverse SX (λ z, true)
+ -/
+lemma hom_determined_on_gens (h : α → β) (g : α → β)
+(hh : hom h) (hg : hom g) (X : set α) : 
+(∀ x, x ∈ X → h x = g x) → (∀ a, a ∈ Sg A X → h a = g a) := 
+assume (h₁ : ∀ x, x ∈ X → h x = g x), 
+assume a (h₂ : a ∈ Sg A X), show h a = g a, from 
+  have h₃ : a ∈ Y A X, from mem_of_eq (Sg A X) (Y A X) (sg_inductive A X) a h₂,
+  Y.rec 
+    --base step: assume a = x ∈ X
+    h₁ 
+    --inductive step: assume a = A f b for some b with ∀ i, b i ∈ Sg X
+    ( assume f b (h₄ : ∀ i, b i ∈ Y A X)  (h₅ : ∀ i, h (b i) = g (b i)),
+      show h (A f b) = g (A f b), from 
+      have h₆ : h ∘ b = g ∘ b, from funext h₅, 
+      calc h (A f b) = (B f) (h ∘ b) : hh f b
+                 ... = (B f) (g ∘ b) : congr_arg (B f) h₆    
+                 ... = g (A f b)     : eq.symm (hg f b)) h₃ 
 
-lemma homs_determined_on_gens (h : υ → τ) (g : υ → τ)
-(hh : @homomorphic S A B h) (hg : @homomorphic S A B g) (X : υ → Prop) : 
-(is_generating X A) → (∀ x, h x = g x) → h = g := sorry
- -/ /- 
+-- A better proof would use sub_equalizer lemma, since we know 
+-- 1. X ⊆ equalizer h g,
+-- 2. Sub (equalizer h g), i.e., equalizer h g is a subalgebra
+-- 3. and Sg X is the smallest subalgebra containing X
+-- It follows that Sg X ⊆ equalizer h g, which means h = g on Sg X.
+
+
+
+ /- 
   Suppose the subset $X \subseteq A$ generates $\mathbf A$ and suppose
   $f |_X = g |_X$.
   Fix an arbitrary element $a\in A$.  We show $f(a) = g(a)$.
@@ -138,5 +124,4 @@ lemma homs_determined_on_gens (h : υ → τ) (g : υ → τ)
   $|Hom(\mathbf A,\mathbf B)| \leq |B|^{|X|}$.
   -/
 
-end
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+end                                                                                                                                                                                                                                            
