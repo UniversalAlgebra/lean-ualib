@@ -73,9 +73,6 @@ section
 lemma mem_of_eq (s t : set α) : s = t →  ∀ x, x ∈ s → x ∈ t := 
 begin intros h x h', rw ←h, assumption end
 
-/- def generates (X : υ → Prop) : Prop := ∀ (SX : υ → Prop), --if B contains X and is a subalgebra of A, then B = A
-∀ x, (X x → (SX x)) →  is_subuniverse A SX → is_subuniverse SX (λ z, true)
- -/
 lemma hom_determined_on_gens (h : α → β) (g : α → β)
 (hh : hom h) (hg : hom g) (X : set α) : 
 (∀ x, x ∈ X → h x = g x) → (∀ a, a ∈ Sg A X → h a = g a) := 
