@@ -40,8 +40,8 @@ section
      Let $f$ and $g$ be homomorphisms from $\mathbf A$ to $\mathbf B$.
      Let $E(f,g) = \{ a \in A : f(a) = g(a) \}$ (the **equalizer** of $f$ and $g$). 
      1. $E(f,g)$ is a subuniverse of $\mathbf A$.
-     2. If $X \subseteq A$, if $X$ generates $\mathbf A$, and if $\restr{f}{X} = \restr{g}{X}$, 
-        then $f = g$. 
+     2. If $X \subseteq A$, if $X$ generates $\mathbf A$, and if the restrictions of f and g
+        to $X$ agree---i.e., $f \upharpoonright X = g \upharpoonright X$---then $f = g$. 
      3. If $\mathbf A$, $\mathbf B$ are finite algebras and $X$ generates $\mathbf A$, then 
         $|Hom(\mathbf A, \mathbf B)| \leq |B|^{|X|}$. -/
 
@@ -116,8 +116,8 @@ lemma homs_determined_on_gens (h : υ → τ) (g : υ → τ)
 (hh : @homomorphic S A B h) (hg : @homomorphic S A B g) (X : υ → Prop) : 
 (is_generating X A) → (∀ x, h x = g x) → h = g := sorry
  -/ /- 
-  Suppose the subset $X \subseteq A$ generates $\alg{A}$ and suppose
-  $\restr{f}{X} = \restr{g}{X}$.
+  Suppose the subset $X \subseteq A$ generates $\mathbf A$ and suppose
+  $f \upharpoonright X = g \upharpoonright X$.
   Fix an arbitrary element $a\in A$.  We show $f(a) = g(a)$.
   Since $X$ generates $\alg{A}$, there exists a (say, $n$-ary) term $t$ and 
   a tuple $(x_1, \dots, x_n) \in X^n$ such that 
