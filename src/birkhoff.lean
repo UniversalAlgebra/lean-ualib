@@ -41,7 +41,7 @@ section
      Let $E(f,g) = \{ a \in A : f(a) = g(a) \}$ (the **equalizer** of $f$ and $g$). 
      1. $E(f,g)$ is a subuniverse of $\mathbf A$.
      2. If $X \subseteq A$, if $X$ generates $\mathbf A$, and if the restrictions of f and g
-        to $X$ agree---i.e., $f \upharpoonright X = g \upharpoonright X$---then $f = g$. 
+        to $X$ agree---i.e., $f |_X = g |_X$---then $f = g$. 
      3. If $\mathbf A$, $\mathbf B$ are finite algebras and $X$ generates $\mathbf A$, then 
         $|Hom(\mathbf A, \mathbf B)| \leq |B|^{|X|}$. -/
 
@@ -117,15 +117,15 @@ lemma homs_determined_on_gens (h : υ → τ) (g : υ → τ)
 (is_generating X A) → (∀ x, h x = g x) → h = g := sorry
  -/ /- 
   Suppose the subset $X \subseteq A$ generates $\mathbf A$ and suppose
-  $f \upharpoonright X = g \upharpoonright X$.
+  $f |_X = g |_X$.
   Fix an arbitrary element $a\in A$.  We show $f(a) = g(a)$.
-  Since $X$ generates $\alg{A}$, there exists a (say, $n$-ary) term $t$ and 
+  Since $X$ generates $\mathbf A$, there exists a (say, $n$-ary) term $t$ and 
   a tuple $(x_1, \dots, x_n) \in X^n$ such that 
-  $a = t^{\alg{A}}(x_1, \dots, x_n)$. Therefore, 
+  $a = t^{\mathbf A}(x_1, \dots, x_n)$. Therefore, 
   \begin{align*}
-    f(a) = f(t^{\alg{A}}(x_1, \dots, x_n)) &= t^{\alg{B}}(f(x_1), \dots, f(x_n))\\
-                                    &= t^{\alg{B}}(g(x_1), \dots, g(x_n))
-                                     = g(t^{\alg{A}}(x_1, \dots, x_n)) = g(a).
+    f(a) = f(t^{\mathbf A}(x_1, \dots, x_n)) &= t^{\mathbf B}(f(x_1), \dots, f(x_n))\\
+                                    &= t^{\mathbf B}(g(x_1), \dots, g(x_n))
+                                     = g(t^{\mathbf A}(x_1, \dots, x_n)) = g(a).
   \end{align*}
   In other words, a homomorphism is uniquely determined by its restriction to 
   a generating set.
@@ -134,8 +134,8 @@ lemma homs_determined_on_gens (h : υ → τ) (g : υ → τ)
 /-  
   
    There are exactly $|B|^{|X|}$ functions from $X$ to $B$ so, 
-  assuming $X$ generates $\alg{A}$, we have
-  $|\!\Hom{\alg{A},\alg{B}}| \leq |B|^{|X|}$.
+  assuming $X$ generates $\mathbf A$, we have
+  $|Hom(\mathbf A,\mathbf B)| \leq |B|^{|X|}$.
   -/
 
 end
