@@ -22,73 +22,39 @@ section
   parameter τ : Sort u  -- Another carrier type
 
   -- Operation on the carrier υ (of arity α) 
---  def op (υ : Sort u) (α : Sort a) := (α → υ) → υ  
+  -- (defined in basic.lean)  def op (υ : Sort u) (α : Sort a) := (α → υ) → υ  
 
   -- Restricted Operation on the carrier υ (of arity α) 
   def op_restricted {υ : Sort u} (r : υ → Prop) (α : Sort a) := (α → (υ → Prop)) → (υ → Prop) 
 
-   -- i-th projection
-   --def π {υ : Sort u} (α : Sort a) (i) : op υ α := λ x, x i
+  -- (defined in basic.lean) structure signature := mk :: (F : Sort s) (ρ : F → Sort a)
 
-  -- Signature
-  -- F : a set of operation symbols
-  -- ρ : returns the arity of a given operation symbol
---  structure signature := 
---  mk :: (F : Sort s) (ρ : F → Sort a)
-  
-  -- The type of interpretations of operation symbols.
---  def algebra_on (υ : Sort u) (S : signature) := Π (f : S.F) , op υ (S.ρ f)
-  -- It's called `algebra_on` since an algebra is fully specified by its
-  -- (Cayley) operation tables. An inhabitant of `algebra_on` assigns to 
-  -- each op symbol f : F, of arity `α = S.ρ f`, an interpretation of f, 
-  -- that is, a function of type (α → υ) → υ.
-  
---  def homomorphic {υ : Sort u} {τ : Sort u} {S : signature} 
---  (A : algebra_on υ S) (B : algebra_on τ S) (h : υ → τ) : Prop := 
---  ∀ (f : S.F) (tuple : (S.ρ f) → υ), h (A f tuple) = (B f) (h ∘ tuple)
-
---parameters {α : Type*} {S : signature} (A : algebra S) (B : algebra S) {I ζ : Type} {R : I → set α} 
---section
-parameters {α : Type*} {β : Type*} {S : signature} (A : algebra_on S α) 
-parameters (B : algebra_on S β) {I ζ : Type} {R : I → set α} 
-open set
-open subuniverse
-  -- parameter {S : signature} 
-  -- parameters {A : algebra_on S} {B : algebra_on τ S}
-  
-  -- def Sub (β : set α) : Prop :=
-  -- ∀ f (a : S.ρ f → α), (∀ x, a x ∈ β) → A f a ∈ β
-
-  -- def is_subuniverse {υ : Sort u} {S : signature} (A : algebra_on υ S) : (υ → Prop) → Prop :=
-/-   def is_subuniverse (B : υ → Prop) : Prop :=
-  ∀ f (tuple : S.ρ f → υ), (∀ x, B (tuple x)) → (A f tuple) ∈ B
- -/  -- Note: z ∈ B is syntactic sugar for B z, so the line B (a x) → B (A f a) 
-  -- is understood to mean: (a x) ∈ B → (A f a) ∈ B.
+  parameters {α : Type*} {β : Type*} {S : signature} (A : algebra_on S α) 
+  parameters (B : algebra_on S β) {I ζ : Type} {R : I → set α} 
+  open set
+  open subuniverse
 
   -- Elementary Facts ------------------------------------------
 
-  /- Lemma (cf. Ex. 1.16.6 of MR2839398)
-     Let $f$ and $g$ be homomorphisms from $\alg{A}$ to $\alg{B}$.
-     Let $E(f,g) = \{ a \in A : f(a) = g(a) \}$ (the \defin{equalizer} of $f$ and $g$). 
-     1. $E(f,g)$ is a subuniverse of $\alg{A}$.
-     2. If $X \subseteq A$ and $X$ generates $\alg{A}$ and $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
+  /- Lemma (cf. Ex. 1.16.6 of Bergman~\cite{MR2839398})
+     Let $f$ and $g$ be homomorphisms from $\mathbf A$ to $\mathbf B$.
+     Let $E(f,g) = \{ a \in A : f(a) = g(a) \}$ (the **equalizer** of $f$ and $g$). 
+     1. $E(f,g)$ is a subuniverse of $\mathbf A$.
+     2. If $X \subseteq A$, if $X$ generates $\mathbf A$, and if $\restr{f}{X} = \restr{g}{X}$, 
+        then $f = g$. 
      3. If $\mathbf A$, $\mathbf B$ are finite algebras and $X$ generates $\mathbf A$, then 
-        $|Hom(\mathbf A, \mathbf B)| \leq |B|^{|X|}$.
-  -/
+        $|Hom(\mathbf A, \mathbf B)| \leq |B|^{|X|}$. -/
+
   -- equalizer for generic functions
   def equalizer (h : α → β) (g : α → β) : set α := λ (x : α), h x = g x 
 
-
-  def hom (h : α → β) :=
-  ∀ f a, h (A f a) = B f (h ∘ a)
+  -- indicates whether h is a homomorphism  
+  def hom (h : α → β) : Prop := ∀ f a, h (A f a) = B f (h ∘ a)
 
   def equalizer_of_homs (h : α → β) (g : α → β) 
-  (hh : hom h) (hg : hom g) : set α := 
-  λ a, h a = g a 
+  (hh : hom h) (hg : hom g) : set α := λ a, h a = g a 
 
-variables (h : α → β) (g : α → β)  (hh : hom h)  (hg : hom g) 
-#check equalizer
-#check @Sub
+  variables (h : α → β) (g : α → β)  (hh : hom h)  (hg : hom g) 
 
   -- 1. The equalizer $E(f,g)$ is a subuniverse of $\mathbf A$.
   lemma sub_equalizer (h : α → β) (g : α → β) (hh : hom h)  (hg : hom g) : 
@@ -101,7 +67,6 @@ variables (h : α → β) (g : α → β)  (hh : hom h)  (hg : hom g)
                  ... = (B f) (g ∘ a): congr_arg (B f) h₂ 
                  ... = g (A f a) : eq.symm (hg f a)
   
-
 
   -- 2. If X ⊆ A, if Sg(X) = \mathbf A, and if f x = g x for all x ∈ X, then f = g. 
 
