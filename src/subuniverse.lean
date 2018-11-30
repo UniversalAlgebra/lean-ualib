@@ -2,13 +2,14 @@ import basic
 import data.set
 
 
+namespace subuniverse
+
 section
 parameters {α : Type*} {S : signature} (A : algebra_on S α) {I ζ : Type} {R : I → set α} 
 open set
 
 def Sub (β : set α) : Prop :=
 ∀ f (a : S.ρ f → α), (∀ x, a x ∈ β) → A f a ∈ β
-
 -- N.B. A f a ∈ β   is notation for   β (A f a)
 
 
@@ -128,7 +129,7 @@ theorem sg_inductive : Sg X = Y :=
   subset.antisymm l r
 end
 
-
+end subuniverse
 
 -- Miscellaneous Notes
 

@@ -12,6 +12,8 @@
 import basic
 import subuniverse 
 import data.set
+import data.quot
+--import data.setoid 
 
 universe s -- where operation (s)ymbols live
 universe u -- where structure (u)niverses (i.e. carriers) live
@@ -47,9 +49,6 @@ section
   (h : α → β) (g : α → β) : set α := λ (x : α), h x = g x 
 
   -- indicates whether h is a homomorphism  
-  def hom_on {α : Type u} {β : Type u'} (A : algebra_on S α) (B : algebra_on S β) (h : α → β) 
-  : Prop := ∀ f a, h (A f a) = B f (h ∘ a)
-
   def hom {A : algebra S} {B : algebra S} (h : A → B) 
   : Prop := ∀ f a, h (A f a) = B f (h ∘ a)
 
@@ -62,24 +61,9 @@ section
   calc (g ∘ h)(A f a) = g ((B f) (h ∘ a)) : (h₁ f a) ▸ h₃ 
                   ... = (C f) (g ∘ h ∘ a) : h₂ f (h ∘ a)
 
-  -- composition of homomorphisms is a homomorphism
-  lemma hom_on_comp_hom_on_of_hom_on {α : Type u} {β : Type u'} {γ : Type u''}
-  {A : algebra_on S α} {B : algebra_on S β} {C : algebra_on S γ}
-  (h : α → β)  {h₁ : hom_on A B h} (g : β → γ) {h₂ : hom_on B C g} : 
-  hom_on A C (g ∘ h) := assume f a, show (g ∘ h)(A f a) = C f (g ∘ h ∘ a), from 
-  have h₃ : (g ∘ h)(A f a) = g (h (A f a)), from  rfl,
-  calc (g ∘ h)(A f a) = g ((B f) (h ∘ a)) : (h₁ f a) ▸ h₃ 
-                  ... = (C f) (g ∘ h ∘ a) : h₂ f (h ∘ a)
-  
-  
-  
   -- the set on which two homs agree
   def equalizer_of_homs {A : algebra S} {B : algebra S}
   (h : A → B) (g : A → B) {hh : hom h} {hg : hom g} : set A := λ a, h a = g a 
-
-  -- the set on which two hom_on's agree
-  def equalizer_of_hom_on {α : Type u} {β : Type u'} {A : algebra_on S α} {B : algebra_on S β}
-  (h : α → β) (g : α → β) {hh : hom_on A B h} {hg : hom_on A B g} : set α := λ a, h a = g a 
 
 
   -- 1. The equalizer $E(f,g)$ is a subuniverse of $\mathbf A$.
@@ -94,19 +78,6 @@ section
                    ... = (B f) (g ∘ a): congr_arg (B f) h₂ 
                    ... = g (A f a) : eq.symm (hg f a)
 
-  -- 1. The equalizer $E(f,g)$ is a subuniverse of $\mathbf A$.
-  lemma sub_equalizer_of_hom_on {α : Type u} {β : Type u'} {A : algebra_on S α} {B : algebra_on S β}
-  (h : α → β) (g : α → β) (hh : hom_on A B h)  (hg : hom_on A B g) : 
-  Sub A (equalizer h g) := 
-  assume f a (h₁: ∀ x, a x ∈ equalizer h g),
-  show A f a ∈ (equalizer h g),  from 
-    have h₂ : h ∘ a = g ∘ a, from funext h₁, 
-    show h (A f a) = g (A f a), from 
-      calc h (A f a) = (B f) (h ∘ a): hh f a
-                 ... = (B f) (g ∘ a): congr_arg (B f) h₂ 
-                 ... = g (A f a) : eq.symm (hg f a)
-
-  
 
   -- 2. If $X ⊆ A$, if $Sg(X) = \mathbf A$, and if $f x = g x$ for all $x ∈ X$, then $f = g$. 
 
@@ -126,18 +97,6 @@ section
   have h₃ : Sub A (equalizer h g), from (sub_equalizer_of_homs h g hh hg),
       (sInter_mem A a) h₂ h₃ h₁
 
-  lemma hom_on_determined_on_gens {α : Type u} {β : Type u'} {A : algebra_on S α} {B : algebra_on S β}
-  (h : α → β) (g : α → β) (hh : hom_on A B h) (hg : hom_on A B g) (X : set α) : 
-  X ⊆ equalizer h g → Sg A X ⊆ equalizer h g := 
-  -- Idea of the proof: we have
-  --     1. X ⊆ equalizer h g,
-  --     2. Sub (equalizer h g), i.e., equalizer h g is a subalgebra
-  --     3. and Sg X is the smallest subalgebra containing X
-  -- Therefore, Sg X ⊆ equalizer h g, which means h = g on Sg X.
-  assume h₁ : X ⊆ equalizer h g, show Sg A X ⊆ equalizer h g, from 
-  assume a (h₂ : a ∈ Sg A X), show a ∈ equalizer h g, from 
-  have h₃ : Sub A (equalizer h g), from (sub_equalizer_of_hom_on h g hh hg),
-      (sInter_mem A a) h₂ h₃ h₁
 
   -- Here's another proof of the last result using the recursor of Y.
   lemma hom_determined_on_gens_rec {A : algebra S} {B : algebra S} 
@@ -158,10 +117,9 @@ section
                    ... = g (A f b)     : eq.symm (hg f b)) h₃ 
 
 
-
   -- def surjective {α : Type u} {β : Type u'} (f : α → β ) : Prop := ∀ y, ∃ x, f x = y
-  --  def injective {α : Type u} {β : Type u'} (f : α → β) : Prop := ∀ ⦃x₁ x₂⦄, f x₁ = f x₂ → x₁ = x₂
-    -- def bijective {α : Type u} {β : Type u'} (f : α → β) : Prop := injective f ∧ surjective f
+  -- def injective {α : Type u} {β : Type u'} (f : α → β) : Prop := ∀ ⦃x₁ x₂⦄, f x₁ = f x₂ → x₁ = x₂
+  -- def bijective {α : Type u} {β : Type u'} (f : α → β) : Prop := injective f ∧ surjective f
 
   open classical function
   local attribute [instance] prop_decidable
@@ -180,43 +138,25 @@ section
   have h₃ : f (some (h₁ b)) = b, from some_spec (h₁ b),
   eq.subst (eq.symm h₂) (eq.symm h₃)
 
-  -- Right inverse of an epimorphism is a homomorphism.
+  -- Right inverse of epi is hom.
   lemma right_inv_of_epi_is_hom {A : algebra S} {B : algebra S} (g : A → B) 
   (h₁ : surjective g) (h₂ : hom g) : hom (right_inv g h₁) := 
   let g_inv := (right_inv g h₁) in 
   show hom g_inv, from 
   assume f b, show g_inv (B f b) = A f (g_inv ∘ b), from  sorry
-
-  -- Right inverse of an epimorphism is a homomorphism.
-  lemma right_inv_of_epi_is_hom_on {α : Type u} {β : Type u'} 
-  {A : algebra_on S α} {B : algebra_on S β} (g : α → β) 
-  (h₁ : surjective g) (h₂ : hom_on A B g) : hom_on B A (right_inv g h₁) := 
-  let g_inv := (right_inv g h₁) in 
-  show hom_on B A g_inv, from 
-  assume f b, show g_inv (B f b) = A f (g_inv ∘ b), from  sorry
-
+  -- B f b = B f (g ∘ g_inv ∘ b) = g (A f (g_inv ∘ b))
+  -- g (g_inv (B f b)) = B f b 
+  -- This seems to show only that the pair
+  -- (g_inv (B f b), A f (g_inv ∘ b)) belongs to the kernel of g.
   
   def ker {α : Type u} {β : Type u'} (f : α → β) : α → α → Prop := λ a b, f a = f b
 
   /-Lemma (Ex. 1.26.8.a. [1])
-    Suppose $f ∈ Hom(A,B)$, $g ∈ Hom(A,C)$, $h$ is surjective, and $ker f ⊆ ker g$. 
-    Then, $∃ h ∈ Hom(B, C)$ such that $g = h ∘ f$.
- 
     If $f : A → B$ is epi
        $g : A → C$ is hom
        $ker f ⊆ ker g$
     Then $∃ h : B → C$ with $g = h ∘ f$ and $h$ is a homomorphism.
   -/
-  lemma hom_on_facotor_down {α : Type u} {β : Type u'} {γ : Type u''}
-  {A : algebra_on S α} {B : algebra_on S β} {C : algebra_on S γ} 
-  (f : α → β) (hf : hom_on A B f) (hs : surjective f) 
-  (g : α → γ) (hg : hom_on A C g) 
-  (kk : ∀ a b, ker f a b → ker g a b) : ∃ h : β → γ, (g = h ∘ f) ∧ (hom_on B C h) := 
-  let h := g ∘ (right_inv f hs)  in 
-  have h₁ : hom_on B C h, from sorry,
-  have h₃ : g = h ∘ f, from sorry, 
-  exists.intro h (and.intro h₃ h₁) 
-
   lemma hom_facotor_down {A : algebra S} {B : algebra S} {C : algebra S} 
   -- assumptions:
   (f : A → B) (hf : hom f) (hs : surjective f)    -- f is epi
@@ -239,11 +179,7 @@ section
        C
   -/
  
-
   /-Lemma (Ex. 1.26.8.b) [1])
-    Let $f : A → B$ and $g : A → C$ be homomorphisms, with $g$ surjective. 
-    If $ker g ⊆ ker f$, then there is a homomorphism $h : C → B$ st $f = h ∘ g$.
-  
     If $f : A → B$ is hom
        $g : A → C$ is epi
        $ker g ⊆ ker f$
@@ -255,23 +191,14 @@ section
   (g : A → C) (hg : hom g) (hs : surjective g)    -- g is epi
   (kk : ∀ a b, ker g a b → ker f a b) :           -- ker g ⊆ ker f
   -- conclusion:
-  ∃ h : C → B,  (f = h ∘ g) ∧ (hom h) := 
+  ∃ h : C → B,  (f = h ∘ g) ∧ (hom h) 
+  := 
   -- proof:
   let h := f ∘ (right_inv g hs)  in 
     have h₁ : hom h, from sorry,
     have h₃ : f = h ∘ g, from sorry, 
     exists.intro h (and.intro h₃ h₁) 
   
-  
-  lemma hom_on_facotor_up {α : Type u} {β : Type u'} {γ : Type u''}
-  {A : algebra_on S α} {B : algebra_on S β} {C : algebra_on S γ} 
-  (f : α → β) (hf : hom_on A B f) 
-  (g : α → γ) (hg : hom_on A C g) (hs : surjective g) 
-  (kk : ∀ a b, ker g a b → ker f a b) : ∃ h : γ → β,  (f = h ∘ g) ∧ (hom_on C B h) := 
-  let h := f ∘ (right_inv g hs)  in 
-  have h₁ : hom_on C B h, from sorry,
-  have h₃ : f = h ∘ g, from sorry, 
-  exists.intro h (and.intro h₃ h₁) 
   /-
        A----f----> B
        |         7
@@ -283,6 +210,104 @@ section
  -/
  
 end                                                                                                                                                                                                                                            
+
+
+
+namespace H -- homomorphisms
+section 
+  parameter S : signature
+  variables {α : Type*} {β : Type*} {A : algebra S} {B : algebra S}
+  open subuniverse 
+  --  def preorder (R : α → α → Prop) : Prop := reflexive R ∧ transitive R
+  --  def partial_order (R : α → α → Prop) : Prop := preorder R ∧ anti_symmetric R
+
+  -- kernel of a set map
+  def ker (f : α → β) : α → α → Prop := 
+  λ a a', f a = f a'
+
+  -- kernel of an algebra map  (shouldn't need two separate defs for ker and kernel)
+  def kernel (f : A → B) : A → A → Prop := 
+  λ a a', f a = f a'
+
+  lemma ker_is_equivalence (h : α → β) : equivalence (ker h) :=
+  have hr : reflexive (ker h), from assume x, rfl,
+  have hs : symmetric (ker h), from 
+    assume x y (hxy : h x = h y), eq.symm hxy,
+  have ht : transitive (ker h), from 
+    assume x y z (h₁ : h x = h y) (h₂ : h y = h z), eq.trans h₁ h₂,
+  ⟨hr, hs, ht⟩ 
+
+  #check ker_is_equivalence 
+
+  lemma kernel_is_equivalence 
+  (h : A → B) (hh : homomorphic h) : equivalence (kernel h) :=
+  have hr : reflexive (kernel h), from assume x, rfl,
+  have hs : symmetric (kernel h), from 
+    assume x y (hxy : h x = h y), eq.symm hxy,
+  have ht : transitive (kernel h), from 
+    assume x y z (h₁ : h x = h y) (h₂ : h y = h z), eq.trans h₁ h₂,
+  ⟨hr, hs, ht⟩ 
+
+  #check kernel_is_equivalence 
+
+  open quot
+  def kernel.setoid (h : A → B) (hh : homomorphic h) : setoid A := 
+  setoid.mk (kernel h) (kernel_is_equivalence h hh)
+
+  -- A homomorphic image (i.e., a quotient modulo kernel of a hom).
+  def quotient_by_hom_kernel (h: A → B) (hh: homomorphic h) := 
+  quot (kernel.setoid h hh).r
+
+  def hom_image (h: A → B) (hh: homomorphic h) : set B := λ b, ∃ a, h a = b
+
+  open classical function
+  local attribute [instance] prop_decidable
+
+  -- A homomorphic image is a subalgebra.
+  lemma hom_image_is_sub (h : A → B) (hh : homomorphic h) : 
+  Sub B (hom_image h hh) := 
+  assume (f : S.F) (b : S.ρ f → B.fst) (h₁ : ∀ i, b i ∈ (hom_image h hh)), 
+  show (hom_image h hh) (B f b),  -- must show ∃ x ∈ A, h x = B f b
+  from  
+    have h₂ : ∀ i, ∃ x, h x = b i, from h₁, 
+    have h₃ : ∀ i, h (some (h₂ i)) = b i, from assume i, some_spec (h₂ i),
+    have h₆ : (λ i, h (some (h₂ i)))= b, from funext h₃, 
+    have h₄ : h (A f (λ i, some (h₂ i))) = B f b, by rw [hh, congr_arg (B f) h₆],
+    exists.intro (A f (λ i, some (h₂ i))) h₄ 
+  -- This is pretty ugly.  There's probably a better way.
+
+
+end
+
+
+end H
+
+namespace S -- subalgebras
+section
+end
+end S
+
+namespace P -- products
+section
+end
+end P
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /- Miscellaneous Notes  
