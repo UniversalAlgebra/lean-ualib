@@ -6,7 +6,10 @@
   References
   [1] Bergman, Clifford, "Universal algebra," CRC Press, 2012
 
-  Copyright (c) 2018 William DeMeo  (See the [LICENSE file](https://github.com/UniversalAlgebra/lean-ualib/blob/master/LICENSE))
+  Copyright (c) 2018 William DeMeo  
+  
+  See the LICENSE file in 
+  \url{https://github.com/UniversalAlgebra/lean-ualib/blob/master/LICENSE}
 -/
 
 import basic
