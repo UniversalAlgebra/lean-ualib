@@ -62,38 +62,15 @@ def compatible (r: A → A → Prop) : Prop :=
 -- A congruence relation on A is a compatible equivalence relation
 def congruence (r: A → A → Prop) : Prop := equivalence r ∧ compatible r
 
-def kernel (f : A → B) : A → A → Prop := 
-λ a a', f a = f a'
+def kernel (f : A → B) : A → A → Prop := λ a a', f a = f a'
+
 
 lemma cong_iff_hom_ker (r :  A → A → Prop) :
 congruence r ↔ ∃ h : A → B, homomorphic h ∧ ((kernel h) = r) := sorry
 
 def image (f : A → B) : set B := λ b, ∃ a, f a = b
 
-def hom_image (h : A → B) (hh : homomorphic h) : set B := image h
+def ker (f : α → β) : α → α → Prop := λ a a', f a = f a'
 
-lemma sub_of_hom_image : Sub hom_image := 
--- def op (β α) := (β → α) → α
-variables f : S.F
-#check op --(S.ρ f) α 
-
--- Each operation f of A has type f : ((S.ρ f) → α) → α, where S.ρ f is the arity of f.
--- Each relation r : α → α → Prop on α induces a relation on tuples:
--- Consider the tuples aa and bb of type (S.ρ f) → α.  Then 
--- aa ≈ bb  iff  ∀ i, r aa i bb i
-
-def liftR {α : Type u_5} (r : α → α → Prop) {τ : Type u_2} : (τ → α) → (τ → α) → Prop := λ s t : τ → α, 
-∀ i, r (s i) (t i)
-
-def compatible₂ (r: A → A → Prop) : Prop := 
-  ∀ f a b, liftR r a b → r (A f a) (A f b)
-
-
-def quot_algebra_on (r : rel_on_A) (rcong : congruence r) 
--- : algebra_on S (quot r) 
-:= Π f, op (S.ρ f) (quot r)
-
-def quot_algebra  (r : rel_on_A) (rcong : congruence r) :=
-psigma (quot_algebra_on r rcong)
 
 end

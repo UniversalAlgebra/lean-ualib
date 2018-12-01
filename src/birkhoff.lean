@@ -1,5 +1,4 @@
-/-birkhoof.lean -- Birkhoff's HSP Theorem in Lean
-
+/-birkhoff.lean -- Birkhoff's HSP Theorem in Lean
   Author: William DeMeo <williamdemeo@gmail.com>
   Date: 26 Nov 2018
 
@@ -7,9 +6,7 @@
   [1] Bergman, Clifford, "Universal algebra," CRC Press, 2012
 
   Copyright (c) 2018 William DeMeo  
-  
-  See the LICENSE file in 
-  \url{https://github.com/UniversalAlgebra/lean-ualib/blob/master/LICENSE}
+  See LICENSE file: https://github.com/UniversalAlgebra/lean-ualib/blob/master/LICENSE
 -/
 
 import basic
