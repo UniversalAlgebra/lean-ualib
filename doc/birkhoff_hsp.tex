@@ -26,6 +26,7 @@ MRREVIEWER = {Konrad P. Pi{\'o}ro},
 \usepackage{amsmath,amssymb,amsfonts,amscd}
 
 
+\usepackage{xspace}
 \usepackage[mathcal]{euscript}
 % Euler for math and numbers
 
@@ -62,12 +63,17 @@ MRREVIEWER = {Konrad P. Pi{\'o}ro},
 \newcommand{\Hom}[1]{\ensuremath{\operatorname{Hom}(#1)}}
 \newcommand{\Epi}[1]{\ensuremath{\operatorname{Epi}(#1)}}
 \newcommand{\Con}[1]{\ensuremath{\operatorname{Con}(#1)}}
+\newcommand{\Clo}{\ensuremath{\operatorname{Clo}}}
+\newcommand{\Proj}{\ensuremath{\operatorname{Proj}}}
 \newcommand{\Sg}[2]{\ensuremath{\operatorname{Sg}^{#1}(#2)}}
 \newcommand{\compose}{\ensuremath{\circ}}
 % \newcommand{\ker}{\ensuremath{\mathrm{ker}}}
 % \newcommand{\implies}{\ensuremath{\Longrightarrow}}
 \newcommand{\va}{\ensuremath{\mathbf{a}}}
 \newcommand{\vb}{\ensuremath{\mathbf{b}}}
+\newcommand{\swap}[1]{\ensuremath{\mathtt{swap}(#1)}}
+\newcommand{\curry}[1]{\ensuremath{\mathtt{curry}(#1)}}
+\newcommand{\uncurry}[1]{\ensuremath{\mathtt{uncurry}(#1)}}
 
 %% function restriction
 %% example: \restr{f}{X} (restriction of f to X)
@@ -115,6 +121,9 @@ MRREVIEWER = {Konrad P. Pi{\'o}ro},
 \newcommand\llb{\ensuremath{\llbracket}}
 \newcommand\rrb{\ensuremath{\rrbracket}}
 
+\newcommand{\defn}[1]{\textbf{#1}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+
 %%////////////////////////////////////////////////////////////////////////////////
 %% Theorem styles
 \numberwithin{equation}{section}
@@ -142,7 +151,6 @@ MRREVIEWER = {Konrad P. Pi{\'o}ro},
 \newtheorem*{obs}{Observation}
 
 
-
 \title{Birkhoff's HSP Theorem}
 \author[C.~Bergman]{Clifford Bergman}
 %% \email{}\urladdr{}
@@ -157,8 +165,89 @@ MRREVIEWER = {Konrad P. Pi{\'o}ro},
 
 \maketitle
 
-\section{Elementary Facts}
+\section{Preliminaries}
+\subsection{Notation}
+The symbols $\N$, $\omega$, and {\tt nat} are used interchangeably; they all denote the 
+set of natural numbers. A \defn{signature} $S = (F, \rho)$ consists of a set $F$ of 
+operation symbols and a function $\rho \colon F \to \N$.  We call $\rho f$ the 
+\defn{arity} of the symbol $f$.  If $A$ is a set and $f$ is a $\rho f$-ary 
+operation on $A$, then we sometimes write $f \colon A^{\rho f} \to A$.  
+Since the natural number $\rho f$ 
+denotes the set $\{0, 1, \dots, \rho f -1\}$, a function $g \colon \rho f \to A$
+is simply a $\rho f$-tuple of elements from $A$; that is for each 
+$i\in \rho f$, $g i \in A$.
 
+By identifying the $\rho f$-th power, $A^{\rho f}$, of the set $A$ with 
+the type $\rho f \to A$ of functions from $\{0, 1, \dots, \rho f -1\}$ to $A$, 
+we thus identify the function type $A^{\rho f} \to A$ with the type 
+$(\rho f \to A) \to A$. 
+To say that $f$ inhabits the function type $A^{\rho f} \to A$ and to write 
+$f \colon A^{\rho f} \to A$ is then equivalent to saying that $f$ inhabits
+$(\rho f \to A) \to A$ and writing $f \colon (\rho f \to A) \to A$.
+
+Fix $m\in \N$. If $a = (a_0, a_1, \dots, a_{m-1})$ is an $m$-tuple of elements from $A$, 
+then (keeping in mind that $m$ is the set $\{0, 1, \dots, m-1\}$) it is 
+useful to understand that this tuple is a function $a : m \to A$, 
+where $a(i) = a_i$, for each $i<m$.
+If $h \colon A \to A$, then $h\circ a : m \to A$ is the tuple 
+$(h(a_0), h(a_1), \dots, h(a_{m-1}))\in A^m$, whose $i$-th coordinate is
+$(h\circ a)(i) = h(a(i)) = h(a_i) \in A$.
+On the other hand, if $g \colon A^m \to A$---equivalently, 
+$g \colon (m \to A) \to A$---then $g a$ is the element $g(a_0, a_1, \dots, a_{m-1}) \in A$.
+If $f \colon (\rho f \to B) \to B$ is a $\rho f$-ary operation on $B$,  
+if $a \colon \rho f \to A$ is a $\rho f$-tuple on $A$, and if 
+$h \colon A \to B$, then $h \circ a \colon \rho f \to B$, so 
+$f (h \circ a) \colon B$.
+
+\subsubsection{Generalized composition}
+
+Suppose $f \colon (\rho f \to A) \to A$, and suppose 
+$g_i \colon A^m \to A$ for each $i <\rho f$.
+Let $g \colon \rho f \to (A^m \to A)$ denote
+the function whose value at $i < \rho f$ is 
+$g(i) = g_i$. We want to define a \emph{generalized composition} of $f$ 
+with $g_0, g_1, \dots, g_{\rho f -1}$.  We could obviously do this component-wise,
+but that makes computing with such compositions unweildy.
+Observe,
+\begin{prooftree}
+  \AxiomC{$f \colon (\rho f \to A) \to A$}
+  \AxiomC{$a \colon \rho f \to A$}
+  \BinaryInfC{$f a \colon A$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$g \colon \rho f \to ((m \to A) \to A)$}
+  \AxiomC{$i \colon \rho f$}
+  \BinaryInfC{$g i \colon (m \to A) \to A$}
+  \AxiomC{$b \colon m \to A$}
+  \BinaryInfC{$g i b\colon A$}
+\end{prooftree}
+Apparently composition of $f$ with $g$ is impossible without dropping down to coordinates
+since the types don't line up properly. 
+However, this is easily fixed with an obvious isomorphism. 
+Denote by $\uncurry{g} \colon (\rho f \times (m \to A)) \to A$
+the uncurried version of $g$, so that $gib = \uncurry{g}(i,b)$.
+Swapping the first and second coordinates of $\uncurry{g}$ yields
+$\swap{\uncurry{g}} \colon ((m\to A) \times \rho f) \to A$; that is  
+$\swap{\uncurry{g}}(b,i) = \uncurry{g} (i,b)$ for all $i \colon \rho f$ and $b \colon m \to A$.  
+Now, if we let $\tilde{g} := \curry{\swap{\uncurry{g}}}$, then the types of $f$ and $\tilde{g}$ 
+are properly aligned for composition.
+Indeed, we have
+\begin{prooftree}
+  \AxiomC{$f \colon (\rho f \to A) \to A$}
+  \AxiomC{$\tilde{g} \colon (m \to A) \to (\rho f  \to A)$}
+  \AxiomC{$b \colon m \to A$}
+  \BinaryInfC{$\tilde{g} b \colon \rho f \to A$}
+  \BinaryInfC{$f \tilde{g} b \colon A$}
+\end{prooftree}
+and for each $b \colon m \to A$, the function $\tilde{g}b \colon \rho f \to A$ is the tuple 
+whose $i$-th coordinate is $\tilde{g}b(i) = g_i(b_0, \dots, b_{m-1})$. Thus,
+\[
+  f\tilde{g} b = f(g_0 (b_0, \dots, b_{m-1}), \dots, g_{\rho f -1}(b_0, \dots, b_{m-1})).
+  \]
+This is called the \defn{generalized composition} of $f$ with $g = (g_0, \dots, g_{\rho f -1})$.
+    
+
+\subsection{Elementary facts}
 \begin{lemma}[\protect{\cite[Ex.~1.16.6]{MR2839398}}]
   \label{ex:1.16.6} 
   Let $f$ and $g$ be homomorphisms from $\alg{A}$ to $\alg{B}$.
@@ -229,6 +318,20 @@ p^{\alg{C}}(h(b_1), \dots, h(b_n)) &=  p^{\alg{C}}(h f(a_1), \dots, h f(a_n))\\
 &=  h p^{\alg{B}}(b_1, \dots, b_n).
 \end{align*}
 \end{proof}
+
+\section{Subalgebra generation}
+
+\section{Clones}
+\begin{theorem}[\protect{\cite[Thm.~4.3.]{MR2839398}}] 
+ Let $A$ be a set and $S = (F, \rho)$ a signature and suppose each $f\in F$ 
+ is a $(\rho f)$-ary operation on $A$. Define
+ \begin{align*}
+  F_0 &= \Proj(A);\\
+ F_{n+1} &= F_n \cup \{ f g \mid f \in F, g \colon \rho f \to (F_n \cap (\rho g \to A)) \}, \text{ for } n < \omega.
+ \end{align*}
+ Then $\Clo^A(F) =  \bigcup_n F_n$.
+\end{theorem}
+ 
 
 \section{Terms and Free Algebras}
 

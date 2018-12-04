@@ -27,14 +27,16 @@ def algebra_on (α : Type*) := Π f, op (S.ρ f) α
 -- a function of type (α → υ) → υ.
 
 -- An algebra pairs a carrier with an interpretation of the op symbols
-def algebra :=
-psigma algebra_on
+def algebra := sigma algebra_on
+-- sigma is the "dependent pair" type: ⟨α, β (α)⟩ which is appropriate here since
+-- an algebra consists of a universe and operations on that universe, and 
+-- the type of the operations depends on the universe type.
 
 instance alg_univ : has_coe_to_sort algebra :=
-⟨_, psigma.fst⟩
+⟨_, sigma.fst⟩
 
 instance alg_ops : has_coe_to_fun algebra :=
-⟨_, psigma.snd⟩
+⟨_, sigma.snd⟩
 
 end
 
@@ -49,28 +51,21 @@ def homomorphic (h : A → B) := ∀ f a, h (A f a) = B f (h ∘ a)
 -- more explicitly, 
 -- def homomorphic {A B : algebra S} (h : A → B) := 
 -- ∀ (f : S.F) (a : (S.ρ f) → A.fst) , h (A f a) = B f (h ∘ a)
-
-def rel_on_A := A → A → Prop
-
-def rel_on_tuples_of_A := (β → α) → (β → α) → Prop
-
--- A relation is compatible with A iff it is preserved by the ops of A
-def compatible (r: A → A → Prop) : Prop := 
-  ∀ (f : S.F) (a : S.ρ f → A.fst) (b : S.ρ f → A.fst), 
-  ∀ i, r (a i) (b i) → r (A f a) (A f b)
-
--- A congruence relation on A is a compatible equivalence relation
-def congruence (r: A → A → Prop) : Prop := equivalence r ∧ compatible r
-
-def kernel (f : A → B) : A → A → Prop := λ a a', f a = f a'
-
-
-lemma cong_iff_hom_ker (r :  A → A → Prop) :
-congruence r ↔ ∃ h : A → B, homomorphic h ∧ ((kernel h) = r) := sorry
-
-def image (f : A → B) : set B := λ b, ∃ a, f a = b
-
-def ker (f : α → β) : α → α → Prop := λ a a', f a = f a'
-
-
 end
+
+
+-- Misc. Notes
+-- -----------
+-- An algebra pairs a carrier with an interpretation of the op symbols.
+-- def algebra := sigma algebra_on
+-- 
+-- sigma is the dependent product (i.e., dependent pair) type.
+--
+-- sigman := Π α, ⟨α, β (α)⟩ 
+--
+-- This is appropriate here since an algebra consists of a universe (of type α),
+-- along with operations on that universe, and the type of each operation is
+-- dependent on the type, α, of the universe.
+--
+-- We use coersions so that, if A is an algebra, Lean will correctly interpret 
+-- the symbol A to mean either the algebra itself or the carrier of the algebra.

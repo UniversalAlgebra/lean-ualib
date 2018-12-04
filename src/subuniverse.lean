@@ -10,6 +10,7 @@ open set
 
 def Sub (β : set α) : Prop :=
 ∀ f (a : S.ρ f → α), (∀ x, a x ∈ β) → A f a ∈ β
+
 -- N.B. A f a ∈ β   is notation for   β (A f a)
 
 
