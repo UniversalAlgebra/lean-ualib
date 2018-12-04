@@ -17,9 +17,9 @@ import data.fintype
 universes u v
 
   /-Reference: Chapter 11 of Theorem Proving in Lean [1].
-    Let `α` be any type, and let `r` be an equivalence relation on `α`. It is mathematically 
-    common to form the "quotient" `α / r`, that is, the type of elements of `α` "modulo" `r`. 
-    One can view `α / r` as the set of equivalence classes of `α` modulo `r`. 
+    Let $\alpha$ be any type, and let $r$ be an equivalence relation on $\alpha$. It is 
+    common to form the "quotient" $\alpha / r$, that is, the type of elements of $\alpha$ "modulo" $r$. 
+    One can view $\alpha / r$ as the set of equivalence classes of $\alpha$ modulo $r$. 
 
 
     Let ``f : α → β`` be any (unary) function and let ``r : α → α → Prop`` be a binary relation
