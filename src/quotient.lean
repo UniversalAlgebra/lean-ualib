@@ -4,9 +4,9 @@
   Date: 30 Nov 2018
 
   References
-  [1] Bergman, Clifford, "Universal algebra," CRC Press, 2012
-  [2] Avigad, et al, "Theorem Proving in Lean," 2018 
+  [1] Avigad, et al, "Theorem Proving in Lean," 2018 
       url: https://leanprover.github.io/theorem_proving_in_lean/theorem_proving_in_lean.pdf
+  [2] Bergman, Clifford, "Universal algebra," CRC Press, 2012
 
   Copyright (c) 2018 William DeMeo  
   See LICENSE file at https://github.com/UniversalAlgebra/lean-ualib/blob/master/LICENSE
