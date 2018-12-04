@@ -17,23 +17,21 @@ import data.fintype
 universes u v
 
   /-Reference: Chapter 11 of Theorem Proving in Lean [1].
-    Let $\alpha$ be any type, and let $r$ be an equivalence relation on $\alpha$. It is 
-    common to form the "quotient" $\alpha / r$, that is, the type of elements of $\alpha$ "modulo" $r$. 
-    One can view $\alpha / r$ as the set of equivalence classes of $\alpha$ modulo $r$. 
+    Let α be any type, and let r be an equivalence relation on α. It is 
+    Then the *quotient* α / r is the type of equivalence classes of α modulo r. 
 
+    Let f : α → β be any (unary) function and let r : α → α → Prop be a binary relation on α.  
+    The Lean standard library takes "f respects r" to mean the following:
 
-    Let ``f : α → β`` be any (unary) function and let ``r : α → α → Prop`` be a binary relation
-    on ``α``.  The Lean standard library takes a notion of "f respects r" that is different from ours.
+    ∀ x y : α, r x y → f x = f y.
     
-    In the Lean std lib, ``f`` *respects* ``r`` iff 
-    ``∀ x y : α, r x y → f x = f y``.
+    But, for us, it seems the consequent f x = f y is unnecessarily strong.  
+    Instead, we would prefer if the notion of a function f "respecting" a relation r
+    to require only that `r x y` implies `r (f x) (f y)`. 
     
-    But the consequent ``f x = f y`` is unnecessarily strong.  
-    Instead, we require only that `r x y` implies `r (f x) (f y)`. 
-    
-    In any case, when ``f`` respects ``r`` (in this appropriate sense), then 
-    ``f`` should "lift" to a function ``f' : α / r → α / r`` defined on each equivalence 
-    class ``⟦x⟧`` by ``f' ⟦x⟧ = ⟦f x⟧``.
+    In any case, when f respects r (in the appropriate sense), then f should "lift" to 
+    a function on the classes, f' : α / r → α / r, defined on each equivalence 
+    class ⟦x⟧ by f' ⟦x⟧ = ⟦f x⟧.
     
     Because of the distinction between our notion of "respects" and that of the std lib, 
     we will roll our own quotient.
@@ -41,7 +39,7 @@ universes u v
 
 namespace ualib_quotient
   --EXAMPLES:
-  -- We have the quotient for unary functions ``f : α → α`` ↦ ``f' : α/r → α/r``  working fine.
+  -- We have the quotient for unary functions f : α → α ↦ f' : α/r → α/r  working fine.
   section unary
   parameters {α : Type*} {ρ : Type*} 
 
@@ -71,8 +69,8 @@ namespace ualib_quotient
   end unary
 
   -- Unfortunately, we haven't got the quotient for higher-ary functions 
-  -- ``f : (ρ → α) → α`` ↦ ``f' : (ρ → α/r) → α/r``  working just yet.
-  -- Also, it's probably only possible to get this working when ``ρ : fintype``.
+  -- f : (ρ → α) → α ↦ f' : (ρ → α/r) → α/r  working just yet.
+  -- Also, it's probably only possible to get this working when ρ : fintype.
 
   section higher_arity
     parameters {α : Type*} {ρ : Type*} 
@@ -253,38 +251,38 @@ end ualib_quotient_algebra
   /-Notes from Ch. 11. Theorem Proving in Lean.
   
     In its most basic form, the quotient construction does not require 
-    ``r`` be an equivalence relation. The following are built into Lean 
+    r be an equivalence relation. The following are built into Lean 
     as constants: 
   -/
   
-  #check @quot  --form the type ``quot r`` given a type ``α`` by any binary relation ``r`` on ``α``. 
+  #check @quot  --form the type quot r given a type α by any binary relation r on α. 
   --constant quot : Π {α : Sort u}, (α → α → Prop) → Sort u
   
-  #check @quot.mk   -- map ``α`` to ``quot α``; if ``r : α → α → Prop`` and ``a : α``, then 
-                    -- ``quot.mk r a ∈ quot r``. 
+  #check @quot.mk   -- map α to quot α; if r : α → α → Prop and a : α, then 
+                    -- quot.mk r a ∈ quot r. 
   --constant quot.mk : Π {α : Sort u} (r : α → α → Prop), α → quot r
   
-  #check @quot.ind  --says that each element of ``quot.mk r a`` is of the form ``quot.mk r a``.  
+  #check @quot.ind  --says that each element of quot.mk r a is of the form quot.mk r a.  
   --axiom quot.ind : ∀ {α : Sort u} {r : α → α → Prop} {β : quot r → Prop},
   --(∀ a, β (quot.mk r a)) → ∀ (q : quot r), β q
 
-  #check @quot.lift --given a function ``f : α → β``, if ``h`` is a proof that ``f`` respects ``r``, 
-                    -- then ``quot.lift f h`` 
-                    -- is the corresponding function on ``quot r``.  -/
+  #check @quot.lift --given a function f : α → β, if h is a proof that f respects r, 
+                    -- then quot.lift f h 
+                    -- is the corresponding function on quot r.  -/
   --constant quot.lift : Π {α : Sort u} {r : α → α → Prop} {β : Sort u}
   --(f : α → β), (∀ a b, r a b → f a = f b) → quot r → β
 
-  -- What makes ``quot`` into a bonafide quotient is the following additional axiom:
+  -- What makes quot into a bonafide quotient is the following additional axiom:
   #check @quot.sound  
-  -- axiom quot.sound: ``∀ {α: Type u} {r: α → α → Prop} {a b: α}, r a b → quot.mk r a = quot.mk r b``
+  -- axiom quot.sound: ∀ {α: Type u} {r: α → α → Prop} {a b: α}, r a b → quot.mk r a = quot.mk r b
   
-  -- If a thm or def uses ``quot.sound``, it will show up in ``#print axioms``.
-  --The quotient is most commonly used when ``r`` is an equivalence relation. 
-  --Given ``r`` as above, define ``r'`` as follows: ``∀ a b, r' a b ↔ quot.mk r a = quot.mk r b``, 
-  --Then it's clear that ``r'`` is an equivalence relation. Indeed, ``r'`` is the *kernel* of 
-  --the function ``a ↦ quot.mk r``.  The axiom ``quot.sound`` says that ``r a b`` implies ``r' a b``. 
-  --Using ``quot.lift`` and ``quot.ind``, we can show that ``r'`` is the smallest equivalence 
-  --containing ``r``. If ``r`` was already an equivalence, then ``∀ a b, r a b ↔ r' a b``.
+  -- If a thm or def uses quot.sound, it will show up in #print axioms.
+  --The quotient is most commonly used when r is an equivalence relation. 
+  --Given r as above, define r' as follows: ∀ a b, r' a b ↔ quot.mk r a = quot.mk r b, 
+  --Then it's clear that r' is an equivalence relation. Indeed, r' is the *kernel* of 
+  --the function a ↦ quot.mk r.  The axiom quot.sound says that r a b implies r' a b. 
+  --Using quot.lift and quot.ind, we can show that r' is the smallest equivalence 
+  --containing r. If r was already an equivalence, then ∀ a b, r a b ↔ r' a b.
 
   --To support this common use case, the std lib defines the notion of a *setoid*, which is 
   --simply a type with an associated equivalence relation:
