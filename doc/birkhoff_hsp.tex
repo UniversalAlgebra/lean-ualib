@@ -1,0 +1,565 @@
+%% FILE: birkhoff_hsp.tex
+%% AUTHOR: Clifford Bergman and William DeMeo
+%% DATE: 25 Sep 2018
+%% COPYRIGHT: (C) 2018 Clifford Bergman and William DeMeo
+\begin{filecontents*}{inputs/refs.bib}
+@book {MR2839398,
+    AUTHOR = {Bergman, Clifford},
+     TITLE = {Universal algebra},
+    SERIES = {Pure and Applied Mathematics (Boca Raton)},
+    VOLUME = {301},
+      NOTE = {Fundamentals and selected topics},
+ PUBLISHER = {CRC Press, Boca Raton, FL},
+      YEAR = {2012},
+     PAGES = {xii+308},
+      ISBN = {978-1-4398-5129-6},
+   MRCLASS = {08-02 (06-02 08A40 08B05 08B10 08B26)},
+  MRNUMBER = {2839398 (2012k:08001)},
+MRREVIEWER = {Konrad P. Pi{\'o}ro},
+}
+\end{filecontents*}
+%:biblio
+%\documentclass[12pt]{amsart}
+\documentclass[12pt,reqno]{amsart}
+
+
+\usepackage{amsmath,amssymb,amsfonts,amscd}
+
+
+\usepackage{xspace}
+\usepackage[mathcal]{euscript}
+% Euler for math and numbers
+
+
+
+%%%%%%% wjd: added these packages vvvvvvvvvvvvvvvvvvvvvvvvv
+% PAGE GEOMETRY
+% These settings are for letter format
+\def\OPTpagesize{8.5in,11in}     % Page size
+\def\OPTtopmargin{1in}     % Margin at the top of the page
+\def\OPTbottommargin{1in}  % Margin at the bottom of the page
+%% \def\OPTinnermargin{0.5in}    % Margin on the inner side of the page
+\def\OPTinnermargin{1.5in}    % Margin on the inner side of the page
+\def\OPTbindingoffset{0in} % Extra offset on the inner side
+%% \def\OPToutermargin{0.75in}   % Margin on the outer side of the page
+\def\OPToutermargin{1.5in}   % Margin on the outer side of the page
+\usepackage[papersize={\OPTpagesize},
+             twoside,
+             includehead,
+             top=\OPTtopmargin,
+             bottom=\OPTbottommargin,
+             inner=\OPTinnermargin,
+             outer=\OPToutermargin,
+             bindingoffset=\OPTbindingoffset]{geometry}
+
+\newcommand{\alg}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\class}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\var}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\clop}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\close}[1]{\ensuremath{\overline{#1}}}
+\newcommand{\Id}[1]{\ensuremath{\operatorname{Id}(#1)}}
+\newcommand{\Mod}[1]{\ensuremath{\operatorname{Mod}(#1)}}
+\newcommand{\defin}[1]{\textbf{#1}}
+\newcommand{\Hom}[1]{\ensuremath{\operatorname{Hom}(#1)}}
+\newcommand{\Epi}[1]{\ensuremath{\operatorname{Epi}(#1)}}
+\newcommand{\Con}[1]{\ensuremath{\operatorname{Con}(#1)}}
+\newcommand{\Clo}{\ensuremath{\operatorname{Clo}}}
+\newcommand{\Proj}{\ensuremath{\operatorname{Proj}}}
+\newcommand{\Sg}[2]{\ensuremath{\operatorname{Sg}^{#1}(#2)}}
+\newcommand{\compose}{\ensuremath{\circ}}
+% \newcommand{\ker}{\ensuremath{\mathrm{ker}}}
+% \newcommand{\implies}{\ensuremath{\Longrightarrow}}
+\newcommand{\va}{\ensuremath{\mathbf{a}}}
+\newcommand{\vb}{\ensuremath{\mathbf{b}}}
+\newcommand{\swap}[1]{\ensuremath{\mathtt{swap}(#1)}}
+\newcommand{\curry}[1]{\ensuremath{\mathtt{curry}(#1)}}
+\newcommand{\uncurry}[1]{\ensuremath{\mathtt{uncurry}(#1)}}
+
+%% function restriction
+%% example: \restr{f}{X} (restriction of f to X)
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+  
+\newcommand{\mysetminus}{\ensuremath{-}}
+%% uncomment the next line if we want to revert to the "set" minus notation
+%% \renewcommand{\mysetminus}{\ensuremath{\setminus}}
+
+\usepackage[yyyymmdd,hhmmss]{datetime}
+\usepackage{background}
+\backgroundsetup{
+  position=current page.east,
+  angle=-90,
+  nodeanchor=east,
+  vshift=-1cm,
+  hshift=8cm,
+  opacity=1,
+  scale=1,
+  contents={\textcolor{gray!80}{WORK IN PROGRESS.  DO NOT DISTRIBUTE. (compiled on \today\ at \currenttime)}}
+}
+
+\usepackage{mathtools}
+%% \usepackage{exers}
+% \usepackage{inputs/wjdlatexmacs}
+
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=blue]{hyperref}
+\usepackage{algorithm2e}
+\usepackage{stmaryrd}
+
+%\usepackage{url,enumerate,tikz,scalefnt}
+\usetikzlibrary{math} %needed tikz library
+\usepackage{comment}
+\usepackage{bussproofs}
+\usepackage{unixode}
+\usepackage{color}
+
+\renewcommand{\th}[2]{#1\mathrel{\theta}#2}
+\newcommand{\infixrel}[3]{#2\mathrel{#1}#3}
+\newcommand\llb{\ensuremath{\llbracket}}
+\newcommand\rrb{\ensuremath{\rrbracket}}
+
+\newcommand{\defn}[1]{\textbf{#1}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+
+%%////////////////////////////////////////////////////////////////////////////////
+%% Theorem styles
+\numberwithin{equation}{section}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{prop}[theorem]{Prop.}
+\theoremstyle{definition}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{subclaim}{Subclaim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{Fact}[theorem]{Fact}
+\newtheorem*{fact}{Fact}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{examples}[theorem]{Examples}
+\newtheorem{exercise}{Exercise}
+\newtheorem*{lem}{Lemma}
+\newtheorem*{cor}{Corollary}
+\newtheorem*{remark}{Remark}
+\newtheorem*{remarks}{Remarks}
+\newtheorem*{obs}{Observation}
+
+
+\title{Birkhoff's HSP Theorem}
+\author[C.~Bergman]{Clifford Bergman}
+%% \email{}\urladdr{}
+%% \address{University of Colorado\\Mathematics Dept\\Boulder 80309\\USA}
+\author[W.~DeMeo]{William DeMeo}
+\email{williamdemeo@gmail.com}
+%% \urladdr{http://williamdemeo.github.io}
+%% \address{University of Colorado\\Mathematics Dept\\Boulder 80309\\USA}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Preliminaries}
+\subsection{Notation}
+The symbols $\N$, $\omega$, and {\tt nat} are used interchangeably; they all denote the 
+set of natural numbers. A \defn{signature} $S = (F, \rho)$ consists of a set $F$ of 
+operation symbols and a function $\rho \colon F \to \N$.  We call $\rho f$ the 
+\defn{arity} of the symbol $f$.  If $A$ is a set and $f$ is a $\rho f$-ary 
+operation on $A$, then we sometimes write $f \colon A^{\rho f} \to A$.  
+Since the natural number $\rho f$ 
+denotes the set $\{0, 1, \dots, \rho f -1\}$, a function $g \colon \rho f \to A$
+is simply a $\rho f$-tuple of elements from $A$; that is for each 
+$i\in \rho f$, $g i \in A$.
+
+By identifying the $\rho f$-th power, $A^{\rho f}$, of the set $A$ with 
+the type $\rho f \to A$ of functions from $\{0, 1, \dots, \rho f -1\}$ to $A$, 
+we thus identify the function type $A^{\rho f} \to A$ with the type 
+$(\rho f \to A) \to A$. 
+To say that $f$ inhabits the function type $A^{\rho f} \to A$ and to write 
+$f \colon A^{\rho f} \to A$ is then equivalent to saying that $f$ inhabits
+$(\rho f \to A) \to A$ and writing $f \colon (\rho f \to A) \to A$.
+
+Fix $m\in \N$. If $a = (a_0, a_1, \dots, a_{m-1})$ is an $m$-tuple of elements from $A$, 
+then (keeping in mind that $m$ is the set $\{0, 1, \dots, m-1\}$) it is 
+useful to understand that this tuple is a function $a : m \to A$, 
+where $a(i) = a_i$, for each $i<m$.
+If $h \colon A \to A$, then $h\circ a : m \to A$ is the tuple 
+$(h(a_0), h(a_1), \dots, h(a_{m-1}))\in A^m$, whose $i$-th coordinate is
+$(h\circ a)(i) = h(a(i)) = h(a_i) \in A$.
+On the other hand, if $g \colon A^m \to A$---equivalently, 
+$g \colon (m \to A) \to A$---then $g a$ is the element $g(a_0, a_1, \dots, a_{m-1}) \in A$.
+If $f \colon (\rho f \to B) \to B$ is a $\rho f$-ary operation on $B$,  
+if $a \colon \rho f \to A$ is a $\rho f$-tuple on $A$, and if 
+$h \colon A \to B$, then $h \circ a \colon \rho f \to B$, so 
+$f (h \circ a) \colon B$.
+
+\subsubsection{Generalized composition}
+
+Suppose $f \colon (\rho f \to A) \to A$, and suppose 
+$g_i \colon A^m \to A$ for each $i <\rho f$.
+Let $g \colon \rho f \to (A^m \to A)$ denote
+the function whose value at $i < \rho f$ is 
+$g(i) = g_i$. We want to define a \emph{generalized composition} of $f$ 
+with $g_0, g_1, \dots, g_{\rho f -1}$.  We could obviously do this component-wise,
+but that makes computing with such compositions unweildy.
+Observe,
+\begin{prooftree}
+  \AxiomC{$f \colon (\rho f \to A) \to A$}
+  \AxiomC{$a \colon \rho f \to A$}
+  \BinaryInfC{$f a \colon A$}
+\end{prooftree}
+\begin{prooftree}
+  \AxiomC{$g \colon \rho f \to ((m \to A) \to A)$}
+  \AxiomC{$i \colon \rho f$}
+  \BinaryInfC{$g i \colon (m \to A) \to A$}
+  \AxiomC{$b \colon m \to A$}
+  \BinaryInfC{$g i b\colon A$}
+\end{prooftree}
+Apparently composition of $f$ with $g$ is impossible without dropping down to coordinates
+since the types don't line up properly. 
+However, this is easily fixed with an obvious isomorphism. 
+Denote by $\uncurry{g} \colon (\rho f \times (m \to A)) \to A$
+the uncurried version of $g$, so that $gib = \uncurry{g}(i,b)$.
+Swapping the first and second coordinates of $\uncurry{g}$ yields
+$\swap{\uncurry{g}} \colon ((m\to A) \times \rho f) \to A$; that is  
+$\swap{\uncurry{g}}(b,i) = \uncurry{g} (i,b)$ for all $i \colon \rho f$ and $b \colon m \to A$.  
+Now, if we let $\tilde{g} := \curry{\swap{\uncurry{g}}}$, then the types of $f$ and $\tilde{g}$ 
+are properly aligned for composition.
+Indeed, we have
+\begin{prooftree}
+  \AxiomC{$f \colon (\rho f \to A) \to A$}
+  \AxiomC{$\tilde{g} \colon (m \to A) \to (\rho f  \to A)$}
+  \AxiomC{$b \colon m \to A$}
+  \BinaryInfC{$\tilde{g} b \colon \rho f \to A$}
+  \BinaryInfC{$f \tilde{g} b \colon A$}
+\end{prooftree}
+and for each $b \colon m \to A$, the function $\tilde{g}b \colon \rho f \to A$ is the tuple 
+whose $i$-th coordinate is $\tilde{g}b(i) = g_i(b_0, \dots, b_{m-1})$. Thus,
+\[
+  f\tilde{g} b = f(g_0 (b_0, \dots, b_{m-1}), \dots, g_{\rho f -1}(b_0, \dots, b_{m-1})).
+  \]
+This is called the \defn{generalized composition} of $f$ with $g = (g_0, \dots, g_{\rho f -1})$.
+    
+
+\subsection{Elementary facts}
+\begin{lemma}[\protect{\cite[Ex.~1.16.6]{MR2839398}}]
+  \label{ex:1.16.6} 
+  Let $f$ and $g$ be homomorphisms from $\alg{A}$ to $\alg{B}$.
+  Let $E(f,g) = \{ a \in A : f(a) = g(a) \}$ (the \defin{equalizer} of $f$ and $g$). 
+  \begin{enumerate}
+    \item	$E(f,g)$ is a subuniverse of $\alg{A}$.
+    \item If $X \subseteq A$ and $X$ generates $\alg{A}$ and
+    $\restr{f}{X} = \restr{g}{X}$, then $f = g$. 
+    \item If $\alg{A}, \alg{B}$ are finite and $X$ generates $\alg{A}$, 
+    then $|\!\Hom{\alg{A},\alg{B}}| \leq |B|^{|X|}$.
+  \end{enumerate}
+\end{lemma}
+\begin{proof}
+  Let $\rho$ be the similarity type of $\alg{A}$ and $\alg{B}$, and 
+  $p$ a (say, $n$-ary) operation symbol in $\rho$. Then, 
+  for every tuple $(a_1, \dots, a_n) \in E(f,g)^n$,
+  \begin{align*}
+    f(p^{\alg{A}}(a_1, \dots, a_n)) &= p^{\alg{B}}(f(a_1), \dots, f(a_n))\\
+                                    &= p^{\alg{B}}(g(a_1), \dots, g(a_n))
+                                     = g(p^{\alg{A}}(a_1, \dots, a_n)).
+  \end{align*}
+  Therefore, $E(f,g)$ is closed under $p$.  Since $p$ was arbitrary, 
+  $E(f,g)$ is closed under all operations in $\rho$ and is thus a 
+  subuniverse of $\alg{A}$.
+
+  Suppose the subset $X \subseteq A$ generates $\alg{A}$ and suppose
+  $\restr{f}{X} = \restr{g}{X}$.
+  Fix an arbitrary element $a\in A$.  We show $f(a) = g(a)$.
+  Since $X$ generates $\alg{A}$, there exists a (say, $n$-ary) term $t$ and 
+  a tuple $(x_1, \dots, x_n) \in X^n$ such that 
+  $a = t^{\alg{A}}(x_1, \dots, x_n)$. Therefore, 
+  \begin{align*}
+    f(a) = f(t^{\alg{A}}(x_1, \dots, x_n)) &= t^{\alg{B}}(f(x_1), \dots, f(x_n))\\
+                                    &= t^{\alg{B}}(g(x_1), \dots, g(x_n))
+                                     = g(t^{\alg{A}}(x_1, \dots, x_n)) = g(a).
+  \end{align*}
+  In other words, a homomorphism is uniquely determined by its restriction to 
+  a generating set. There are exactly $|B|^{|X|}$ functions from $X$ to $B$ so, 
+  assuming $X$ generates $\alg{A}$, we have
+  $|\!\Hom{\alg{A},\alg{B}}| \leq |B|^{|X|}$.
+\end{proof}
+
+\begin{lemma}[\protect{\cite[Ex.~1.26.8]{MR2839398}}]
+  \label{ex:1.26.8}
+  Suppose $f \in \Hom{\alg{A},\alg{B}}$, $g \in \Hom{\alg{A},\alg{C}}$, 
+  $f$ is surjective, and $\ker f \subseteq \ker g$, then $\exists h \in \Hom{\alg{B},\alg{C}}$, $g = h \compose f$.
+  % Let $f \colon \alg{A} \to \alg{B}$ and $f \colon \alg{A} \to \alg{C}$ be homomorphisms, with $g$ surjective. Prove that if $\ker g \subseteq \ker f$, then there is a homomorphism 
+  % $h \colon \alg{C} \to \alg{B}$ such that $f = h \compose g$.
+\end{lemma}
+\begin{proof}
+Define $h\colon B \to C$ as follows: for each $b\in B$, choose (by Axiom of Choice!) $a_0\in f^{-1}\{b\}$
+and let $h(b) = g(a_0)$.  (Since $f$ is surjective, such an $a_0$ exists for each $b\in B$.)
+Fix $a \in A$.  We show $g(a) = h f(a)$. Let $a_0$ be the element of $f^{-1}\{f(a)\}$ that we
+chose when defining $h$ at $b = f(a)$. That is, $h(b) = g(a_0)$.
+Then, $f(a_0) = b = f(a)$, so $(a_0, a) \in \ker f\subseteq \ker g$, so 
+$g(a) = g(a_0) = h(b) = h f(a)$, as desired.
+
+To see that $h$ is a homomorphism, let $p$ be a (say, $n$-ary) operation symbol.
+Let $(b_1, \dots, b_n) \in B^n$, and let $(a_1, \dots, a_n)$ be the respective representatives
+of the $f$-kernel classes $f^{-1}\{b_i\}$ that we chose when defining $h$.
+Then,
+\begin{align*}
+p^{\alg{C}}(h(b_1), \dots, h(b_n)) &=  p^{\alg{C}}(h f(a_1), \dots, h f(a_n))\\
+&=  p^{\alg{C}}(g(a_1)), \dots, g(a_n))\\
+&=  g p^{\alg{A}}(a_1, \dots, a_n))\\
+&=  h f p^{\alg{A}}(a_1, \dots, a_n)\\
+&=  h p^{\alg{B}}(f(a_1), \dots, f(a_n))\\
+&=  h p^{\alg{B}}(b_1, \dots, b_n).
+\end{align*}
+\end{proof}
+
+\section{Subalgebra generation}
+
+\section{Clones}
+\begin{theorem}[\protect{\cite[Thm.~4.3.]{MR2839398}}] 
+ Let $A$ be a set and $S = (F, \rho)$ a signature and suppose each $f\in F$ 
+ is a $(\rho f)$-ary operation on $A$. Define
+ \begin{align*}
+  F_0 &= \Proj(A);\\
+ F_{n+1} &= F_n \cup \{ f g \mid f \in F, g \colon \rho f \to (F_n \cap (\rho g \to A)) \}, \text{ for } n < \omega.
+ \end{align*}
+ Then $\Clo^A(F) =  \bigcup_n F_n$.
+\end{theorem}
+ 
+
+\section{Terms and Free Algebras}
+
+
+\begin{theorem}[\protect{\cite[Thm.~4.21]{MR2839398}}] 
+  \label{thm:4.21}
+  Let $\rho$ be a similarity type.
+  \begin{enumerate}
+    \item $\alg{T}_\rho(X)$ is generated by $X$.
+    \item For every algebra $\alg{A}$ of type $\rho$ and every function 
+    $h\colon X \to A$ there is a unique homomorphism $g\colon \alg{T}_\rho(X) \to \alg{A}$ 
+    such that $\restr{g}{X} = h$.
+  \end{enumerate}
+\end{theorem}
+\begin{proof} The definition of $\alg{T}_\rho(X)$ exactly parallels the construction in 
+Theorem 1.14. That accounts for (1). For (2), define $g(t)$ by induction on $|t|$. 
+Suppose $|t| = 0$. Then $t \in X \cup \class{F}_0$. If $t \in X$ then define 
+$g(t) = h(t)$. For $t \in \class{F}_0$, $g(t) = t^{\alg{A}}$. 
+Note that since $\alg{A}$ is an algebra of type $\rho$ and $t$ is a nullary 
+operation symbol, $t^{\alg{A}}$ is defined.
+
+For the inductive step, let $|t| = n + 1$. Then $t = f(s_1, \dots, s_k)$ for some 
+$f \in \class{F}_k$ and $s_1, \dots, s_k$ each of height at most $n$. We define
+$g(t) = f^{\alg{A}}(g(s_1), \dots, g(s_k))$.
+
+By its very definition, $g$ is a homomorphism.
+Finally, the uniqueness of $g$ follows from Lemma~\ref{ex:1.16.6}.
+\end{proof}
+
+
+\begin{theorem}[\protect{\cite[Thm.~4.32]{MR2839398}}] 
+  \label{thm:4.32} 
+Let $\alg{A}$ and $\alg{B}$ be algebras of type $\rho$.
+\begin{enumerate}
+  \item
+    For every $n$-ary term $t$ and homomorphism $g\colon \alg{A} \to \alg{B}$, 
+    $g(t^{\alg{A}}(a_1,\dots, a_n)) = t^{\alg{B}}(g(a_1),\dots, g(a_n))$.
+  \item
+    For every term $t \in T_\rho(X_\omega)$ and every $\theta \in \Con{\alg{A}}$, 
+    $\va \equiv_\theta \vb \implies t^{\alg{A}}(\va) \equiv_\theta t^{\alg{A}}(\vb)$.
+  \item
+    For every subset $Y$ of $A$,
+    \[\Sg{\alg{A}}{Y} = 
+    \{ t^{\alg{A}}(a_1,\dots, a_n) : t \in T(X_n), a_i \in Y, i \leq n < \omega\}.\]
+\end{enumerate}
+\end{theorem}
+\begin{proof} 
+  The first statement is an easy induction on $|t|$. 
+  The second statement follows from the first by taking $\alg{B} = \alg{A}/\theta$ 
+  and $g$ the canonical homomorphism. For the third statement, again by induction on the 
+  height of $t$, every subalgebra must be closed under the action of $t^{\alg{A}}$. 
+  Thus the right-hand side is contained in the left. On the other hand, the right-hand 
+  side is clearly a subalgebra containing the elements of $Y$ (take $t = x_1$) from 
+  which the reverse inclusion follows.
+\end{proof}
+
+\section{Birkhoff's Theorem}
+\begin{definition}
+Let $\rho$ be a similarity type. 
+An \defin{identity of type} $\rho$ is an ordered pair of terms, written 
+$p \approx q$, from $T_\rho(X_\omega)$. Let $\alg{A}$ be an algebra of type $\rho$.
+We say that $\alg{A}$ satisfies $p\approx q$ if $p^{\alg{A}} = q^{\alg{A}}$. 
+In this situation, we write $\alg{A} \models p \approx q$.
+If $\class{K}$ is a class of algebras of type $\rho$, we write 
+$\class{K} \models p \approx q$ if $\forall \alg{A} \in \class{K}$, 
+$\alg{A} \models p \approx q$. Finally, if $\Sigma$ is a set of equations, 
+we write $\class{K} \models \Sigma$ if every member of $\class{K}$ satisfies
+every member of $\Sigma$.
+\end{definition}
+
+\begin{definition} Let $\class{K}$ be a class of algebras and $\Sigma$ a set of equations, each 
+of similarity type $\rho$. We define 
+$\Id{\class{K}} = \{p \approx q : \class{K} \models p \approx q\}$ 
+and
+$\Mod{\Sigma} = \{ \alg{A} : \alg{A} \models \Sigma \}$.
+Classes of the form $\Mod{\Sigma}$ are called \defin{equational classes}, and $\Sigma$ is called 
+an \defin{equational base} or an \defin{axiomatization} of the class. $\Mod{\Sigma}$ is called the 
+class of \defin{models} of $\Sigma$. Dually, a set of identities of the form $\Id{\class{K}}$ is called an 
+\defin{equational theory}.
+\end{definition}
+
+\begin{lemma}[\protect{\cite[Lem.~4.36]{MR2839398}}] 
+  \label{lem:4.36} 
+  For every class $\class{K}$, each of the classes $\clop{S}(\class{K})$, 
+  $\clop{H}(\class{K})$, $\clop{P}(\class{K})$, and $\clop{V}(\class{K})$ satisfies 
+  exactly the same identities as does $\class{K}$.
+\end{lemma}
+\begin{proof} (exercise) \end{proof}
+
+
+\begin{lemma}[\protect{\cite[Lem.~4.37]{MR2839398}}]
+  \label{lem:4.37} 
+  $\class{K} \models p \approx q$ 
+  if  and  only  if  for  every  $\alg{A} \in \class{K}$  and  every  
+  $h\in \Hom{\alg{T}(X_\omega),\alg{A}}$,  we  have  $h(p)  =  h(q)$.
+\end{lemma} 
+\begin{proof} First  assume  that  $\class{K} \models p\approx  q$.  
+  Pick  $\alg{A}$ and $h$ as  in  the  theorem.  Then
+  $\alg{A} \models p\approx q \implies p^{\alg{A}} = q^{\alg{A}} \implies 
+  p^{\alg{A}}(h(x_1), \dots, h(x_n)) = q^{\alg{A}}(h(x_1), \dots, h(x_n))$.
+  Since  $h$  is  a  homomorphism,  we  get  
+  $h(p^{\alg{A}}(x_1, \dots, x_n)) = h(q^{\alg{A}}(x_1, \dots, x_n))$, i.e., $h(p) = h(q)$.
+
+  To  prove  the  converse  we  must  take  any  $\alg{A} \in \class{K}$  and  
+  $a_1, \dots, a_n \in A$ and show that $p^{\alg{A}}(x_1, \dots, x_n) = q^{\alg{A}}(x_1, \dots, x_n)$.
+  Let $h_0 \colon X_\omega \to A$ be a function with $h_0(x_i) = a_i$ for $i\leq n$.
+  By  Theorem~\ref{thm:4.21},  $h_0$ extends  to  a homomorphism  $h$ from $\alg{T}(X_\omega)$
+  to $\alg{A}$.  By  assumption  $h(p)  =  h(q)$.  Since 
+  $h(p)  =  h(p^{\alg{A}}(x_1, \dots, x_n)) = 
+  p^{\alg{A}}(h(x_1), \dots, h(x_n)) =  p^{\alg{A}}(a_1,\dots, a_n)$ 
+  (and  similarly  for  $q$)  the  result  follows. 
+\end{proof}
+
+
+
+\begin{theorem}[\protect{\cite[Thm.~4.38]{MR2839398}}]
+  \label{thm:4.38}  
+  Let $\class{K}$ be a class of algebras and $p \approx q$ an equation. The 
+  following are equivalent.
+  \begin{enumerate}
+    \item \label{item:1} $\class{K} \models p\approx q$.
+    \item \label{item:2} $(p,q)$ belongs to the congruence $\lambda_{\class{K}}$ on $\alg{T}(X_\omega)$.
+    \item \label{item:3} $\alg{F}_{\class{K}}(X_\omega) \models p\approx q$.
+  \end{enumerate} 
+\end{theorem}
+\begin{proof} 
+  We shall show 
+  (\ref{item:1}) $\implies$ (\ref{item:3}) $\implies$ (\ref{item:2}) $\implies$ (\ref{item:1}).
+  Throughout the proof we write $\alg{F}$ for $\alg{F}_{\class{K}}(X_\omega)$, $\alg{T}$ for 
+  $\alg{T}(X_\omega)$ and $\lambda$ for $\lambda_{\class{K}}$. 
+  Recall that $\alg{F} = \alg{T}/\lambda \in \clop{S}\clop{P}(\class{K})$. 
+  From (a) and Lemma~\ref{lem:4.36} we get $\clop{S}\clop{P}(\class{K}) \models p \approx q$. 
+  Thus (c) holds.
+
+  From (c), $p^{\alg{F}}(\bar{x}_1,\dots, \bar{x}_n) = q^{\alg{F}}(\bar{x}_1,\dots, \bar{x}_n)$
+  where $\bar{x}_i = x_i/\lambda$. From the definition of $\alg{F}$, 
+  $p^{\alg{T}}(x_1,\dots, x_n) \equiv_\lambda q^{\alg{T}}(x_1,\dots, x_n)$
+  from which (b) follows since $p = p^{\alg{T}}(x_1,\dots, x_n)$ and $q = q^{\alg{T}}(x_1,\dots, x_n)$.
+
+  Finally assume (b). We wish to apply Lemma~\ref{lem:4.37}. 
+  Let $\alg{A} \in \class{K}$ and $h \in \Hom{\alg{T},\alg{A}}$. 
+  Then $\alg{T}/\ker h \in \clop{S}(\alg{A}) \subseteq \clop{S}(\class{K})$ so $\ker h \supseteq \lambda$. 
+  Then (b) implies that $h(p) = h(q)$ hence (a) holds.
+\end{proof}
+
+Theorem~\ref{thm:4.38} tells us that we can determine whether an identity is true 
+in a variety by consulting a particular algebra, namely $\alg{F}(X_\omega)$. 
+Sometimes it is convenient to work with algebras free on other generating sets besides 
+$X_\omega$. The following corollary takes care of that for us.
+
+\begin{corollary}[\protect{\cite[Cor.~4.39]{MR2839398}}]
+  \label{cor:4.39} 
+Let $\class{K}$ be a class of algebras, $p$ and $q$ $n$-ary terms, $Y$ a set 
+and $y_1, \dots, y_n$ distinct elements of $Y$. Then $\class{K} \models p \approx q$ 
+if and only if 
+$p^{\alg{F}_{\class{K}}(Y)}(y_1, \dots, y_n) = q^{\alg{F}_{\class{K}}(Y)}(y_1, \dots, y_n)$.
+In particular, $\class{K} \models p \approx q$ if and only if 
+$\alg{F}_{\class{K}}(X_n)\models p \approx q$.
+\end{corollary}
+\begin{proof}
+Since $\alg{F}_{\class{K}}(Y)\in \clop{S}\clop{P}(\class{K})$, the left-to-right 
+direction uses the same argument as in Theorem~\ref{thm:4.38}. So assume 
+that 
+$p^{\alg{F}_{\class{K}}(Y)}(y_1, \dots, y_n) = q^{\alg{F}_{\class{K}}(Y)}(y_1, \dots, y_n)$.
+To show that $\class{K} \models p \approx q$, let 
+$\alg{A} \in \class{K}$ and $a_1$, $\dots$, $a_n \in A$. 
+We must show $p^{\alg{A}}(a_1, \dots, a_n) = q^{\alg{A}}(a_1, \dots, a_n)$. 
+There is a homomorphism $h\colon \alg{F}_{\class{K}}(Y) \to \alg{A}$ 
+such that $h(y_i) = a_i$ for $i \leq n$. Then
+\begin{align*}
+ p^{\alg{A}}(a_1, \dots, a_n) &= p^{\alg{A}}(h (y_1), \dots, h (y_n))
+= h(p^{\alg{F}_{\class{K}}(Y)}(y_1, \dots, y_n))\\
+&= h(q^{\alg{F}_{\class{K}}(Y)}(y_1, \dots, y_n))
+= q^{\alg{A}}(h(y_1), \dots, h(y_n))\\
+&= q^{\alg{A}}(a_1, \dots, a_n).
+\end{align*}
+
+\end{proof}
+
+It follows from Lemma~\ref{lem:4.36} that every equational class is a variety. 
+The converse is Birkhoff's Theorem.
+
+\begin{theorem}[\protect{\cite[Thm.~4.41]{MR2839398}}]
+  \label{thm:4.41}
+Every variety is an equational class.
+\end{theorem}
+\begin{proof}
+Let $\var{W}$ be a variety. We must find a set of equations that axiomatizes $\var{W}$. 
+The obvious choice is to use the set of all equations that hold in $\var{W}$. 
+To this end, take $\Sigma = \Id{\var{W}}$. Let $\close{\var{W}} = \Mod{\Sigma}$. 
+Clearly, $\var{W} \subseteq \close{\var{W}}$. We shall prove the reverse inclusion.
+
+Let $\alg{A} \in \close{\var{W}}$ and $Y$ a set of cardinality $\max(|A|, |\omega|)$. 
+Choose a surjection $h_0\colon Y \to A$. By Theorem~\ref{thm:4.21}, $h_0$ extends to 
+a (surjective) homomorphism $h \colon \alg{T}(Y) \to \alg{A}$. Furthermore, since 
+$\alg{F}_{\var{W}}(Y) = \alg{T}(Y)/\Theta_{\var{W}}$, there is a surjective homomorphism
+$g \colon \alg{T}(Y) \to \alg{F}_{\var{W}}$.
+
+We claim that $\ker g \subseteq \ker h$. 
+If the claim is true then by Lemma~\ref{ex:1.26.8} there is a map 
+$f\colon \alg{F}_{\var{W}}(Y) \to \alg{A}$ such that $f \compose g = h$. 
+Since $h$ is surjective, so is $f$. Hence 
+$\alg{A} \in \clop{H}(\alg{F}_{\var{W}}(Y)) \subseteq \var{W}$ completing the proof.
+
+Let $u,v \in T(Y)$ and assume that $g(u) = g(v)$. 
+Since $\alg{T}(Y)$ is generated by $Y$, by Theorem~\ref{thm:4.21}, 
+there is an integer $n$, terms $p, q \in T(X_n)$, and 
+$y_1$, $\dots$, $y_n \in Y$ such that $u = p^{\alg{T}(Y)}(y_1,\dots, y_n)$ and 
+$v = q^{\alg{T}(Y)}(y_1,\dots, y_n)$, by Theorem~\ref{thm:4.32}. 
+Applying the homomorphism $g$,
+\[
+ p^{\alg{F}_{\var{W}}(Y)}(y_1,\dots, y_n) = g(u) = g(v) = 
+ q^{\alg{F}_{\var{W}}(Y)}(y_1,\dots, y_n).
+ \]
+ Then by Corollary~\ref{cor:4.39}, $\var{W} \models p \approx q$, hence 
+ $(p \approx q) \in \Sigma$. 
+ Since $\alg{A} \in \close{\var{W}} = \Mod{\Sigma}$,
+ we get $\alg{A} \models p \approx q$. Therefore, 
+ \[
+  h(u) = p^{\alg{A}}(h_0(y_1), \dots, h_0(y_n))
+  = q^{\alg{A}}(h_0(y_1), \dots, h_0(y_n)) = h(v),
+  \]
+ as desired.
+\end{proof}
+
+
+\bibliographystyle{alphaurl}
+\bibliography{inputs/refs}
+
+
+\end{document}

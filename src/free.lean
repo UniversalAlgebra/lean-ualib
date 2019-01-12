@@ -1,60 +1,82 @@
 import basic
 
 section
-parameters (S : signature) (X : Type*)
+  parameters {S : signature} (X :Type*)
+  local notation `F` := S.F
+  local notation `ρ` := S.ρ 
 
-inductive term
-| var     : X → term
-| app (f) : (S.ρ f → term) → term
+  inductive term
+  | var         : X → term
+  | app (f : F) : (ρ f → term) → term
 
-def free : algebra S :=
-⟨term, term.app⟩
-
+  def Term : algebra S := ⟨term, term.app⟩
 end
 
 section
-parameters {S : signature} (A : algebra S) (X : Type*)
+  open term
+  parameters {S : signature} (X :Type*) {A : algebra S} -- 
+  definition F := S.F
+  definition ρ := S.ρ 
+  definition 𝕋 := @Term S
+  definition 𝕏 := @var S X
 
-open term
+  -- To prove that the free algebra is free, we show that
+  -- the lift of an arbitrary function h : X → A is a homomorphism
+  -- and that it is the unique homomorphism extending h.
 
-def free_ := free S X
-def var_  := @var S X
+  -- Definition of the lift of a function.
+  definition lift_of (h : X → A) : 𝕋(X) → A
+  | (var x) := h x
+  | (app f a) := (A f) (λ x, lift_of (a x))
 
--- Free algebra is really free: existence & uniqueness of homomorphism
+  -- The lift of a function is a homomorphism.
+  lemma lift_is_hom (h : X → A) : homomorphic (lift_of h) :=
+  λ f a, show lift_of h (app f a) = A f (lift_of h ∘ a), from rfl
 
-section
-parameter (h : X → A)
+  -- The lift of a function is unique among homomorphic lifts.
+  lemma lift_is_unique : ∀ {h h' : 𝕋(X) → A},
+  homomorphic h → homomorphic h' → h ∘ 𝕏 = h' ∘ 𝕏 → h = h' :=
+  assume (h h' : 𝕋(X) → A) (h₁ : homomorphic h)
+    (h₂ : homomorphic h')(h₃ : h ∘ 𝕏 = h' ∘ 𝕏),
+    show h = h', from 
+      have h₀ : ∀ t : 𝕋(X), h t = h' t, from 
+        assume t : 𝕋(X), 
+        begin
+          induction t with t f a ih₁ ,
+          show h (𝕏 t) = h' (𝕏 t),
+          { apply congr_fun h₃ t },
 
-def imap : free_ → A
-| (var .(S) x) := h x
--- WARNING: need to fully expand composition so Lean doesn't throw a tantrum
-| (app f a)    := A f (λ x, imap $ a x)
+          show h (app f a) = h' (app f a),
+          { have ih₂  : h ∘ a = h' ∘ a, from funext ih₁,
+            calc h (app f a) = A f (h ∘ a) : h₁ f a
+                         ... = A f (h' ∘ a) : congr_arg (A f) ih₂ 
+                         ... = h' (app f a) : (h₂ f a).symm }
+        end,
+      funext h₀ 
 
-lemma imap_is_hom : homomorphic imap :=
-λ f a, show imap (app f a) = A f (imap ∘ a), from rfl
 
-end
 
-lemma hom_unique : ∀ {α β : free_ → A},
-  homomorphic α → homomorphic β → α ∘ var_ = β ∘ var_ → α = β :=
-begin
-  assume (α β : free_ → A)
-         (hα : homomorphic α)
-         (hβ : homomorphic β)
-         (h : α ∘ var_ = β ∘ var_),
+
+
+  -- begin
+  --   assume (h h' : 𝔽(X) → A)
+  --          (h₁ : homomorphic h)
+  --          (h₂ : homomorphic h')
+  --          (h₃ : h ∘ 𝕏 = h' ∘ 𝕏),
   
-  funext t, show α t = β t,
+  --   funext t, show h t = h' t,
   
-  induction t with t f a ih,
+  --   induction t with t f a ih₁ ,
 
-  show α (var_ t) = β (var_ t),
-  { apply congr_fun h t },
+  --   show h (𝕏 t) = h' (𝕏 t),
+  --   { apply congr_fun h₃ t },
 
-  show α (app f a) = β (app f a),
-  { have ih' : α ∘ a = β ∘ a, from funext ih,
-    calc α (app f a) = A f (α ∘ a) : hα f a
-                 ... = A f (β ∘ a) : congr_arg (A f) ih'
-                 ... = β (app f a) : (hβ f a).symm }
-end
+  --   show h (app f a) = h' (app f a),
+  --   { have ih₂  : h ∘ a = h' ∘ a, from funext ih₁,
+  --     calc h (app f a) = A f (h ∘ a) : h₁ f a
+  --                ... = A f (h' ∘ a) : congr_arg (A f) ih₂ 
+  --                ... = h' (app f a) : (h₂ f a).symm }
+  -- end
+
 
 end
