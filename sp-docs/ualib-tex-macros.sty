@@ -1,0 +1,251 @@
+\providecommand{\inj}{\operatorname{in}}
+\providecommand{\inji}{\operatorname{in}_i}
+\providecommand{\FGrp}{\operatorname{F}_{\mathbf{Grp}}}
+% :math:`\newcommand\FGrp{\mathbf{F}_{\mathbf{Grp}}} \newcommand\inj{\mathrm{in}}`
+% \hypersetup{
+%     colorlinks,
+%     linkcolor={Brown},
+%     citecolor={purple},
+%     urlcolor={blue}
+% }
+
+% % Section styles
+% \theoremstyle{plain}
+% \newtheorem*{thm}{Theorem}
+% \newtheorem*{lem}{Lemma}
+% \newtheorem*{cor}{Corollary}
+% \newtheorem*{prop}{Proposition}
+% \theoremstyle{definition}
+% \newtheorem*{defn}{Definition}
+% \newtheorem*{axm}{Axiom}
+% \theoremstyle{remark}
+
+% \newtheorem{rem}{Remark}[section] 
+
+% \DeclareMathOperator{\id}{id} % Identity map
+% \DeclareMathOperator{\dom}{dom} % Domain of a function
+% \DeclareMathOperator{\cod}{cod} % Domain of a function
+% \providecommand{\cat}[1]{\ensuremath{\mathcal{#1}}} % Arbitrary category
+% \providecommand{\Cat}{\mathbf{Cat}} % Category of sets
+% \providecommand{\Ca}{\ensuremath{\cat C}} % Arbitrary category
+% \providecommand{\Da}{\ensuremath{\cat D}} % Arbitrary category
+% \providecommand{\Ea}{\ensuremath{\cat E}} % Arbitrary category
+% \DeclareMathOperator{\op}{op} % Opposite
+% \providecommand{\alg}[1]{\mathbf{#1}} % Algebraic structures
+% \providecommand{\rel}[1]{\mathbb{#1}} % Relational structures
+% \providecommand{\idrel}{\ensuremath{\mathbbm{1}}} % Relational structure identity
+% \providecommand{\set}{\mathbf{Set}} % Category of sets
+% \providecommand{\Rel}{\ensuremath{\mathbf{Rel}}\xspace} % Category of sets with relations
+% \providecommand{\parf}{\mathbf{Par}} % Category of sets with partial functions
+% \providecommand{\finset}{\mathbf{Fin}} % Category of finite sets
+% \providecommand{\grph}{\mathbf{Grph}} % Category of graphs
+% \providecommand{\mon}{\mathbf{Mon}} % Category of monoids
+% \providecommand{\grp}{\mathbf{Grp}} % Category of groups
+% \providecommand{\pos}{\mathbf{Pos}} % Category of posets
+
+% \providecommand{\pair}[2]{\left\langle#1,#2\right\rangle} % Pairing of morphisms
+
+%% VVVVVV BEGIN BETTER MARGIN NOTES  VVVVVV
+%%
+%% This section of macros was added to provide for better margin notes.
+%% SEE:  http://tex.stackexchange.com/questions/9796/how-to-add-todo-notes
+%%
+\usepackage{xargs}           % Use more than one optional parameter in a new commands
+%%% wjd 2017.04.04: added the following macros VVVVVVVVVVVVVv
+% \usepackage[yyyymmdd,hhmmss]{datetime}
+% \usepackage{background}
+% \backgroundsetup{
+%   position=current page.east,
+%   angle=-90,
+%   nodeanchor=east,
+%   vshift=-1cm,
+%   hshift=8cm,
+%   opacity=1,
+%   scale=1,
+%   contents={\textcolor{gray!80}{WORK IN PROGRESS.  DO NOT DISTRIBUTE. (compiled on \today\ at \currenttime)}}
+% }
+
+% \newdateformat{specialdate}{\twodigit\year-\twodigit\month-\twodigit\day}
+% \date{\specialdate\today}
+% \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+
+%% Command William uses for margin notes:  \wjd{this is a note}
+% \newcommandx{\wjd}[2][1=]{%
+%   \todo[linecolor=purple,backgroundcolor=purple!25,bordercolor=purple,#1]%
+%        {{\bf wjd} \specialdate\today: #2}
+% }
+
+% \newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+%% ^^^^^^^^^ END BETTER MARGIN NOTES ^^^^^^^^^^^^^^
+%%
+
+%%///////////////////////////////////////////////////////////////////////////////////
+%% tikz notes:
+%% For Hasse diagrams, instead of hard-coding the size of the circle representing
+%% points in a lattice, please use \dotsize.  For example,
+%%     \node (bottom) at (0,0) [draw, circle,inner sep=\dotsize] {};
+%% or
+%%     \node[lat] (bottom) at (0,0) {};  (see comment on the "lat" style below)
+%% To create nodes of lattices in a uniform and consistent way, we define
+%%
+
+% \tikzcdset{arrow style=tikz}
+% \tikzset{>=latex}
+% \tikzstyle{lat} = [circle,draw,inner sep=0.8pt]
+% \tikzstyle{shortarrow} = [->]
+
+%% To put a lattice node named "mynode" at the point (x,y)=(1,2) in the figure,
+%% put the following inside your tikzpicture block:
+%%     \node[lat] (mynode) at (1,2) {};
+% \tikzstyle{vertex}=[circle, draw, inner sep=0.8pt]
+
+%%% !!! LOOPS !!! %%%
+% \tikzstyle{loopr} = [shortarrow, loop, out=310, in=50]
+% \tikzstyle{loopl} = [shortarrow, loop, out=130, in=230]
+% \tikzstyle{loopu} = [shortarrow, loop, out=40, in=140] 
+% \tikzstyle{loopd} = [shortarrow, loop, out=220, in=320] 
+% \tikzstyle{lEdge} = [fill=white, anchor=center,pos=0.5,font=\bfseries,inner sep=1.8pt]
+% \tikzstyle{lEdgepos} = [fill=white, anchor=center,pos=0.5,font=\bfseries,inner sep=1.8pt]
+
+% \newcommand\loopabove[2]{\draw (#1) edge[loopu, looseness=#2] (#1);}
+% \newcommand\lloopabove[3]{\draw (#1) edge [loopu, looseness=#3] node [lEdge]{#2} (#1);}
+
+% \newcommand\loopleft[2]{\draw (#1) edge[loopl, looseness=#2] (#1);}
+% \newcommand\lloopleft[3]{\draw (#1) edge [loopl, looseness=#3] node [lEdge]{#2} (#1);}
+
+% \newcommand\loopright[2]{\draw (#1) edge[loopr, looseness=#2] (#1);}
+% \newcommand\lloopright[3]{\draw (#1) edge [loopr, looseness=#3] node [lEdge]{#2} (#1);}
+
+% \newcommand\loopbelow[2]{\draw (#1) edge[loopd, looseness=#2] (#1);}
+% \newcommand\lloopbelow[3]{\draw (#1) edge [loopd, looseness=#3] node [lEdge]{#2} (#1);}
+
+% \newcommand\bentpath[4]{\path[->] (#1) edge[bend #4] node [lEdge] {#3} (#2);}
+% \newcommand\strpathpos[4]{\path[->] (#1) edge node [lEdgepos, pos=#4] {#3} (#2);}
+% \newcommand\strpath[3]{\path[->] (#1) edge node [lEdge] {#3} (#2);}
+% \newcommand\strpathShort[4]{\path[->,shorten >= #4,shorten <= #4] (#1) edge node [lEdge] {#3} (#2);}
+% \newcommand\dotpath[3]{\path[->,dotted,thick] (#1) edge node [lEdge] {#3} (#2);}
+% \tikzstyle{lEdgeAlt} = [fill=white, anchor=center,pos=0.5,font=\bfseries,inner sep=3pt]
+% \newcommand\dotpathAlt[3]{\path[->,dotted,thick] (#1) edge node [lEdgeAlt] {#3} (#2);}
+
+%% FONT FOR DEFINING A TERM WITHIN A PARAGRAPH
+%% wjd: 2017.04.17: We can set all new terms that we define in the text
+%% or inside a Definition environment in bold-italic for now.  We may want
+%% to change that later, and we may even want to create an index of these terms
+%% automatically; to facilitate this, we should use a special command to typeset
+%% these terms consistently (instead of just using \bf \emph).
+% \newcommand{\define}[1]{{\bf #1}}    % bold and italic
+%% ALL NEW TERMS SHOULD BE TYPESET USING THE \define COMMAND, like this:
+%% A \define{widget} is a device that...
+
+% \usepackage{comment}
+
+% \newif\ifANS
+% \ANSfalse  % <== suppress exercise solutions
+% \ifANS 
+%   \newenvironment{sol}{\noindent \emph{Solution.}}{}
+% \else 
+%   \excludecomment{sol} 
+% \fi
+
+% \newcommand\ap{\ensuremath{\operatorname{ap}}} %% omega-chain cocomplete posets
+% \newcommand\ocpo{\ensuremath{\omega\mathbf{cpo}}} %% omega-chain cocomplete posets
+% \newcommand\dcpo{\ensuremath{\mathbf{dcpo}}}      %% directed-cocomplete posets
+% \newcommand\Pre{\ensuremath{\mathbf{Pre}}}        %% Preorders
+% \newcommand\Poset{\ensuremath{\mathbf{Poset}}}    %% Posets
+% \newcommand\Grp{\ensuremath{\mathbf{Grp}}}        %% Lattices
+% \newcommand\lat{\ensuremath{\mathbf{Lat}}}        %% Lattices
+% \newcommand\clat{\ensuremath{\mathbf{CLat}}}      %% Compelete lattices
+% \newcommand\aclat{\ensuremath{\mathbf{ACLat}}}    %% Algebraic compelete lattices
+% \newcommand\blat{\ensuremath{\mathbf{BLat}}}      %% Boolean lattices
+% \newcommand\hlat{\ensuremath{\mathbf{HLat}}}      %% Heyting lattices
+% \newcommand\sdom{\ensuremath{\mathbf{SDom}}}      %% Scott domains
+% \newcommand\bA{\ensuremath{\mathbf{A}}}      %% Bold symbol
+% \newcommand\bB{\ensuremath{\mathbf{B}}}      %% Bold symbol
+% \newcommand\bL{\ensuremath{\mathbf{L}}}      %% Bold symbol
+% \newcommand\bM{\ensuremath{\mathbf{M}}}      %% Bold symbol
+% \newcommand\bX{\ensuremath{\mathbf{X}}}     %% Bold symbol
+% \newcommand\bY{\ensuremath{\mathbf{Y}}}     %% Bold symbol
+% \newcommand\sA{\ensuremath{\mathcal{A}}}      %% Script symbol
+% \newcommand\sB{\ensuremath{\mathcal{B}}}      %% Script symbol
+% \newcommand\sL{\ensuremath{\mathcal{L}}}      %% Script symbol
+% \newcommand\sM{\ensuremath{\mathcal{M}}}      %% Script symbol
+% \newcommand\sX{\ensuremath{\mathcal{X}}}     %% Script symbol
+% \newcommand\sY{\ensuremath{\mathcal{Y}}}     %% Script symbol
+
+
+% \renewcommand\hom{\ensuremath{\operatorname{Hom}}} 
+
+% \newcommand{\<}{\ensuremath{\langle}} % useful for algebraic and rel structures
+% \renewcommand{\>}{\ensuremath{\rangle}} % useful for algebraic and rel structures
+% \renewcommand{\leq}{\ensuremath{\leqslant}}
+% \renewcommand{\preceq}{\ensuremath{\preccurlyeq}}
+% \renewcommand{\geq}{\ensuremath{\geqslant}}
+
+%% for long mapsto arrows
+%% centernot,
+% \usepackage{mathtools,stmaryrd}
+% \makeatletter
+% \newcommand{\xMapsto}[2][]{\ext@arrow 0599{\Mapstofill@}{#1}{#2}}
+% \def\Mapstofill@{\arrowfill@{\Mapstochar\Relbar}\Relbar\Rightarrow}
+% \makeatother
+% \newcommand{\xlmapsto}[2][]{\xmapsto[\phantom{x}#1\phantom{x}]{\phantom{x}#2\phantom{x}}}
+% \newcommand{\xlMapsto}[2][]{\xMapsto[\phantom{x}#1\phantom{x}]{\phantom{x}#2\phantom{x}}}
+
+
+%% use it like this:
+%%  \xmapsto[below]{above}  (``below'' goes below the arrow; ``above'' goes above)
+%%  \xlmapsto[below]{above}
+%%  \xMapsto[A]{sdfkjhsdf}  (double arrow version)
+%%  \xlMapsto[A]{sdfkjhsdf}  (double arrow version)
+% \newcommand\To{\Rightarrow}
+% \newcommand\funcat[2]{\ensuremath \cat #2^{\cat #1}}
+% \newcommand\cset{\ensuremath{\set^{\cat C}}}
+% \newcommand\eval{\ensuremath{eval}}
+
+
+%%%%%%%%%%%%%  ADDED DURING CONFLICT MERGE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% NATURAL NUMBERS {0, 1, 2, ...}
+% \providecommand\N{\ensuremath{\mathbb{N}}\xspace}
+% \providecommand\nat{\ensuremath{\mathbb{N}}\xspace} % set of natural numbers
+
+% \providecommand{\map}{\ensuremath{\mathbf{map}}\xspace} % map functor
+% \providecommand{\rev}{rev} % word reversal functor
+% \providecommand{\set}{\ensuremath{\mathbf{Set}}\xspace} % Category of sets
+% \providecommand{\parf}{\ensuremath{\mathbf{Par}}\xspace} % Category of sets w/ partial functions
+% \providecommand{\finset}{\ensuremath{\mathbf{Fin}}\xspace} % Category of finite sets
+% \providecommand{\grph}{\ensuremath{\mathbf{Grph}}\xspace} % Category of graphs
+% \providecommand{\mon}{\ensuremath{\mathbf{Mon}}\xspace} % Category of monoids
+% \providecommand{\grp}{\ensuremath{\mathbf{Grp}}\xspace} % Category of groups
+% \providecommand{\pos}{\ensuremath{\mathbf{Pos}}\xspace} % Category of posets
+% \providecommand{\pyth}{\ensuremath{\mathbf{Pyth}}\xspace} % Category of reals with Pythagorean triples
+% \providecommand{\fnord}{\ensuremath{\mathbf{Ord}_\mathrm{fin}}\xspace} % Category of finite ordinals
+% \providecommand{\cat}{\ensuremath{\mathbf{Cat}}\xspace} % Category of small categories
+% \providecommand{\fun}{\ensuremath{\mathbf{Fun}}\xspace} % Functor category
+
+% \providecommand{\sF}{\ensuremath{\mathcal{F}}\xspace} % operations symbols
+% \providecommand{\calF}{\ensuremath{\mathcal{F}}\xspace} % sometimes we use \mathcal{F} for
+%                                                         % a functor; other times we use F
+% \providecommand{\calC}{\ensuremath{\mathcal{C}}\xspace} % functor C
+% \providecommand{\calD}{\ensuremath{\mathcal{D}}\xspace} % functor D
+% \providecommand{\sG}{\ensuremath{\mathcal{G}}\xspace} % object in the category grph
+% \providecommand{\calG}{\ensuremath{\mathcal{G}}\xspace} % object in the category grph
+% \providecommand{\sP}{\ensuremath{\mathcal{P}}\xspace} % powerset functor
+% \providecommand{\Fa}{\ensuremath{\mathscr{F}}\xspace} %
+
+% \providecommand\ar{\ensuremath{\operatorname{ar}}}
+% \providecommand{\pair}[2]{\left\langle#1,#2\right\rangle} % Pairing of morphisms
+
+% \newcommand{\uni}[1]{|#1|} % alternative notations for the universe (aka forgetful) functor 
+% \newcommand{\universe}[1]{|#1|} % alternative notations for the universe (aka forgetful) functor 
+% \renewcommand{\uni}[1]{U#1} % alternative notations for the universe (aka forgetful) functor
+% \renewcommand{\universe}[1]{U(#1)} % alternative notations for the universe (aka forgetful) functor
+% \newboolean{exercises}
+% \setboolean{exercises}{true}
+% \newboolean{solutions}
+% \setboolean{solutions}{true}
+
+% \newcommand\IncEx[1]{\ifexercises #1 \fi}
+% \newcommand\EX[1]{\ifexercises \input{./exercises/#1.tex} \ifsolutions \vskip3mm \input{./exercises/#1-soln.tex} \fi \fi}
+% \newcommand\IncSol[1]{\ifsolutions #1 \fi}
+% \newcommand\Nat{\ensuremath{\operatorname{Nat}}}
