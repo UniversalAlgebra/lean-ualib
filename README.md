@@ -2,6 +2,14 @@
 
 Library of Lean code for Universal Algebra
 
+This is a work in progress.
+
+## Documentation
+
+Please visit [ualib.org](https://ualib.gitlab.io/) for full documentation.
+
+https://ualib.gitlab.io/
+
 ## Installation
 
 Use of this library requires (at least) the following steps:
